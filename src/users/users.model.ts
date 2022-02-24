@@ -5,8 +5,6 @@ import {
   Model,
   Table,
 } from 'sequelize-typescript';
-import { Novel } from 'src/novels/novels.model';
-import { userFavourites } from './user-favourites';
 
 //поля необходимые для создания объекта
 interface UserCreationAttrs {
@@ -27,10 +25,7 @@ export class User extends Model<User, UserCreationAttrs> {
   @Column({ type: DataType.STRING, unique: true })
   username: string;
 
-  @Column({ type: DataType.STRING, unique: true, allowNull: true })
-  email: string;
-
-  @Column({ type: DataType.STRING, unique: true, allowNull: true })
+  @Column({ type: DataType.STRING })
   password: string;
 
   @Column({ type: DataType.STRING, defaultValue: 'regular' })
@@ -39,6 +34,6 @@ export class User extends Model<User, UserCreationAttrs> {
   @Column({ type: DataType.STRING })
   avatar: string;
 
-  @BelongsToMany(() => Novel, () => userFavourites)
-  favourites: Novel[];
+  // @BelongsToMany(() => Novel, () => userFavourites)
+  // favourites: Novel[];
 }

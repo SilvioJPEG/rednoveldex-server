@@ -23,7 +23,7 @@ export class AuthService {
   }
 
   private async validateUser(userDto: CreateUserDto) {
-    const user = await this.usersService.getUserByEmail(userDto.username);
+    const user = await this.usersService.getUserByName(userDto.username);
     const passwordEquals = await bcrypt.compare(
       userDto.password,
       user.password,
@@ -37,7 +37,7 @@ export class AuthService {
   }
 
   async registration(userDto: CreateUserDto) {
-    const candidate = this.usersService.getUserByEmail(userDto.username);
+    const candidate = this.usersService.getUserByName(userDto.username);
     if (candidate) {
       throw new HttpException(
         'This email was used by another user. Try entering another email',
@@ -53,7 +53,7 @@ export class AuthService {
   }
 
   async login(userDto: CreateUserDto) {
-    const user = this.validateUser(userDto);
+    const user = await this.validateUser(userDto);
     return this.generateToken(user);
   }
 }

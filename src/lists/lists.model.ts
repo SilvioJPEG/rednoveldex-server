@@ -6,7 +6,6 @@ import {
   Model,
   Table,
 } from 'sequelize-typescript';
-import { Novel } from 'src/novels/novels.model';
 import { User } from 'src/users/users.model';
 
 //поля необходимые для создания объекта

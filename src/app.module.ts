@@ -6,33 +6,36 @@ import { UsersModule } from './users/users.module';
 import { ConfigModule } from '@nestjs/config';
 import { User } from './users/users.model';
 import { RolesModule } from './roles/roles.module';
-import { NovelsModule } from './novels/novels.module';
 import { AuthModule } from './auth/auth.module';
 import { Role } from './roles/roles.model';
+import { UsersController } from './users/users.controller';
+import * as dotenv from 'dotenv';
+import { Novel } from './novels/novels.model';
+import { NovelsModule } from './novels/novels.module';
 import { userFavourites } from './users/user-favourites.model';
-import { ListsController } from './lists/lists.controller';
+import { List } from './lists/lists.model';
 import { ListsModule } from './lists/lists.module';
 
 @Module({
+  controllers: [],
+  providers: [AppService],
   imports: [
-    ConfigModule.forRoot({ envFilePath: 'env' }),
+    ConfigModule.forRoot({
+      envFilePath: '.env'
+    }),
     SequelizeModule.forRoot({
-      dialect: 'postgres',
+      dialect: 'postgres', 
       host: process.env.POSTGRES_HOST,
       port: Number(process.env.POSTGRES_PORT),
-      username: process.env.POSTGRES_USERNAME,
-      password: process.env.POSTGRES_PASSWORD,
+      username: 'postgres', 
+      password: 'postpass',
       database: process.env.POSTGRES_DB,
-      models: [User, Role, userFavourites],
+      models: [User, Novel, userFavourites],
       autoLoadModels: true, //чтобы sequelize создавал в бд таблицы на основании созданных моделей
     }),
     UsersModule,
-    RolesModule,
-    NovelsModule,
     AuthModule,
-    ListsModule,
+    NovelsModule
   ],
-  controllers: [AppController, ListsController],
-  providers: [AppService],
 })
 export class AppModule {}
