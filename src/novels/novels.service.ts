@@ -8,10 +8,14 @@ export class NovelsService {
   constructor(@InjectModel(Novel) private novelRepository: typeof Novel) {}
 
   async getOne(id: number) {
-    const user = await this.novelRepository.findOne({ where: { id } });
-    return user;
+    const novel = await this.novelRepository.findOne({ where: { id } });
+    return novel;
   }
   async create(NovelDto: AddNovelDto) {
       
+  }
+  async findByUrlPath(path:string) {
+    const novel = await this.novelRepository.findOne({ where: { urlPath: path } });
+    return novel;
   }
 }

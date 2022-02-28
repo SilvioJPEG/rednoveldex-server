@@ -9,7 +9,7 @@ import { ListsService } from './lists.service';
 @Module({
   controllers: [ListsController],
   providers: [ListsService],
-  imports: [SequelizeModule.forFeature([List])],
+  imports: [SequelizeModule.forFeature([List, Novel, User])],
   
 })
 export class ListsModule {}

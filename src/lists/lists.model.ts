@@ -1,12 +1,16 @@
 import {
   BelongsToMany,
+  BelongsTo,
   Column,
   DataType,
-  ForeignKey,
   Model,
   Table,
+  ForeignKey,
 } from 'sequelize-typescript';
+import { Novel } from 'src/novels/novels.model';
+import { userFavourites } from 'src/users/user-favourites.model';
 import { User } from 'src/users/users.model';
+import { ListOfNovels } from './list-of-novels.model';
 
 //поля необходимые для создания объекта
 interface ListCreationAttrs {
@@ -30,7 +34,16 @@ export class List extends Model<List, ListCreationAttrs> {
   @Column({ type: DataType.STRING })
   description: string;
 
+  @BelongsToMany(() => Novel, () => ListOfNovels)
+  novels: Novel[];
+
+
+
+
   @ForeignKey(() => User)
-  @Column({ type: DataType.NUMBER, allowNull: false })
-  author_id: number;
+  @Column({type: DataType.INTEGER, allowNull: false})
+  userId: number;
+  @BelongsTo(() => User)
+  user: User;
+
 }

@@ -18,7 +18,7 @@ export class AuthService {
   private async generateToken(user: User) {
     const payload = { username: user.username, id: user.id };
     return {
-      token: this.jwtService.sign(payload),
+      accessToken: this.jwtService.sign(payload),
     };
   }
 
@@ -37,10 +37,11 @@ export class AuthService {
   }
 
   async registration(userDto: CreateUserDto) {
-    const candidate = this.usersService.getUserByName(userDto.username);
+    console.log(userDto)
+    const candidate = await this.usersService.getUserByName(userDto.username);
     if (candidate) {
       throw new HttpException(
-        'This email was used by another user. Try entering another email',
+        'This username was used by another user. Try entering another email',
         400,
       );
     }
