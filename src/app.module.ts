@@ -7,37 +7,41 @@ import { User } from './users/users.model';
 import { AuthModule } from './auth/auth.module';
 import { Novel } from './novels/novels.model';
 import { NovelsModule } from './novels/novels.module';
-import { userFavourites } from './users/user-favourites.model';
 import { List } from './lists/lists.model';
 import { ListOfNovels } from './lists/list-of-novels.model';
 import { ReviewsModule } from './reviews/reviews.module';
 import { Review } from './reviews/reviews.model';
-import { PostsController } from './posts/posts.controller';
 import { PostsModule } from './posts/posts.module';
 import { Post } from './posts/posts.model';
+import { userFavourites } from './novels/user-favourites.model';
+import { JournalController } from './journal/journal.controller';
+import { JournalModule } from './journal/journal.module';
+import { Journal } from './journal/journal.model';
+import { JournalOfNovels } from './journal/journal-of-novels.model';
 
 @Module({
-  controllers: [PostsController],
   providers: [AppService],
   imports: [
     ConfigModule.forRoot({
-      envFilePath: '.env'
+      envFilePath: '.env',
     }),
     SequelizeModule.forRoot({
-      dialect: 'postgres', 
+      dialect: 'postgres',
       host: process.env.POSTGRES_HOST,
       port: Number(process.env.POSTGRES_PORT),
-      username: 'postgres', 
+      username: 'postgres',
       password: 'postpass',
       database: process.env.POSTGRES_DB,
-      models: [User, Novel, userFavourites, List, ListOfNovels, Review, Post],
+      models: [User, Novel, userFavourites, List, ListOfNovels, Review, Post, Journal, JournalOfNovels],
       autoLoadModels: true, //чтобы sequelize создавал в бд таблицы на основании созданных моделей
     }),
     UsersModule,
     AuthModule,
     NovelsModule,
     ReviewsModule,
-    PostsModule
+    PostsModule,
+    JournalModule,
   ],
+  controllers: [],
 })
 export class AppModule {}

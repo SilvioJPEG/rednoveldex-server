@@ -8,6 +8,7 @@ import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { UsersService } from 'src/users/users.service';
 import * as bcrypt from 'bcryptjs';
 import { User } from 'src/users/users.model';
+
 @Injectable()
 export class AuthService {
   constructor(
@@ -22,7 +23,7 @@ export class AuthService {
     };
   }
 
-  private async validateUser(userDto: CreateUserDto) {
+  private async validateUser(userDto: CreateUserDto): Promise<any> {
     const user = await this.usersService.getUserByName(userDto.username);
     const passwordEquals = await bcrypt.compare(
       userDto.password,
@@ -37,11 +38,11 @@ export class AuthService {
   }
 
   async registration(userDto: CreateUserDto) {
-    console.log(userDto)
+    console.log(userDto);
     const candidate = await this.usersService.getUserByName(userDto.username);
     if (candidate) {
       throw new HttpException(
-        'This username was used by another user. Try entering another email',
+        'This username was used by another user. Try entering another one.',
         400,
       );
     }
@@ -55,6 +56,8 @@ export class AuthService {
 
   async login(userDto: CreateUserDto) {
     const user = await this.validateUser(userDto);
-    return this.generateToken(user);
+    const accessToken = await this.generateToken(user);
+    const profile = await this.usersService.getUserProfile(user.username);
+    return { user: profile, accessToken };
   }
 }

@@ -6,15 +6,18 @@ import {
   Table,
 } from 'sequelize-typescript';
 import { Novel } from 'src/novels/novels.model';
-import { List } from './lists.model';
+import { Journal } from '../journal/journal.model';
 
-interface ListOfNovelsAttrs {
-  novelId: number;
-  listId: number;
+interface JournalOfNovelsAttrs {
+    novelId: number;
+    journalId: number;
 }
 
-@Table({ tableName: 'list_of_novels' })
-export class ListOfNovels extends Model<ListOfNovels, ListOfNovelsAttrs> {
+@Table({ tableName: 'journal_of_novels' })
+export class JournalOfNovels extends Model<
+  JournalOfNovels,
+  JournalOfNovelsAttrs
+> {
   @Column({
     type: DataType.INTEGER,
     unique: true,
@@ -27,8 +30,7 @@ export class ListOfNovels extends Model<ListOfNovels, ListOfNovelsAttrs> {
   @Column({ type: DataType.INTEGER, allowNull: false })
   novelId: number;
 
-  @ForeignKey(() => List)
+  @ForeignKey(() => Journal)
   @Column({ type: DataType.INTEGER, allowNull: false })
-  listId: number;
-
+  journalId: number;
 }

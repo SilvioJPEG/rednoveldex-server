@@ -1,24 +1,26 @@
 import { HttpException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
+import { Journal } from 'src/journal/journal.model';
 import { CreateUserDto } from './dto/create-user.dto';
 import { User } from './users.model';
 
 @Injectable()
 export class UsersService {
-  constructor(@InjectModel(User) private userRepository: typeof User) {}
+  constructor(@InjectModel(User) private userRepository: typeof User, @InjectModel(Journal) private journalRepository: typeof Journal) {}
 
   async createUser(dto: CreateUserDto) {
     const user = await this.userRepository.create(dto);
+    await this.journalRepository.create({ownerId:user.id});
     return user;
   }
-  async getAllUsers() {
-    const users = await this.userRepository.findAll();
-    return users;
-  }
+
   async getUserByName(username: string): Promise<User | undefined> {
-    const user = await this.userRepository.findOne({ where: { username: username } });
-    return user;
+    const user = await this.userRepository.findOne({
+      where: { username: username },
+    });
+    if (user) return user;
   }
+  
   async getUserProfile(username: string) {
     const user = await this.getUserByName(username);
     if (user) {

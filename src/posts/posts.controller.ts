@@ -1,16 +1,15 @@
-import { Controller } from '@nestjs/common';
+import { Body, Controller, Post } from '@nestjs/common';
+import { AddPostDto } from './add-post.dto';
+import { PostsService } from './posts.service';
 
 @Controller('posts')
 export class PostsController {
-  constructor(private novelsService: NovelsService) {}
+  constructor(private postsService: PostsService) {}
 
   @Post()
-  create(@Body() userDto: AddNovelDto) {
-    return this.novelsService.create(userDto);
+  create(@Body() postDto: AddPostDto) {
+
   }
 
-  @Get(':path')
-  findByUrlPath(@Param('path') path: string) {
-    return this.novelsService.findByUrlPath(path);
-  }
+
 }

@@ -16,18 +16,11 @@ export class UsersController {
     return this.usersService.createUser(userDto);
   }
 
-  @ApiOperation({ summary: 'get all users' })
-  @ApiResponse({ status: 200, type: [User] })
-  @Get()
-  getAll() {
-    return this.usersService.getAllUsers();
-  }
-
   @ApiOperation({ summary: 'get user by username' })
   @ApiResponse({ status: 200, type: User })
   @Get(`:username`)
-  getByName(@Param('username') username: string) {
+  getUserProfile(@Param('username') username: string) {
     return this.usersService.getUserProfile(username);
-
   }
+
 }

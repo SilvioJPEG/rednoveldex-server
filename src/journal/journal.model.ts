@@ -1,22 +1,24 @@
 import {
+  BelongsToMany,
+  BelongsTo,
   Column,
   DataType,
-  Table,
   Model,
+  Table,
   ForeignKey,
-  BelongsTo,
+  HasMany,
 } from 'sequelize-typescript';
 import { Novel } from 'src/novels/novels.model';
 import { User } from 'src/users/users.model';
+import { JournalOfNovels } from './journal-of-novels.model';
 
 //поля необходимые для создания объекта
-interface ReviewCreationAttrs {
-  username: string;
-  password: string;
+interface JournalCreationAttrs {
+  ownerId: number;
 }
 
-@Table({ tableName: 'reviews' })
-export class Review extends Model<Review, ReviewCreationAttrs> {
+@Table({ tableName: 'journals' })
+export class Journal extends Model<Journal, JournalCreationAttrs> {
   @Column({
     type: DataType.INTEGER,
     unique: true,
@@ -25,18 +27,12 @@ export class Review extends Model<Review, ReviewCreationAttrs> {
   })
   id: number;
 
-  @Column({ type: DataType.STRING, allowNull: false })
-  content: string;
+  @BelongsToMany(() => Novel, () => JournalOfNovels)
+  novels: Novel[];
 
   @ForeignKey(() => User)
   @Column({ type: DataType.INTEGER, allowNull: false })
-  userId: number;
+  ownerId: number;
   @BelongsTo(() => User)
   user: User;
-
-  @ForeignKey(() => Novel)
-  @Column({ type: DataType.INTEGER, allowNull: false })
-  novelId: number;
-  @BelongsTo(() => Novel)
-  novel: Novel;
 }

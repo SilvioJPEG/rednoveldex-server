@@ -7,7 +7,7 @@ import {
   Table,
 } from 'sequelize-typescript';
 import { Novel } from 'src/novels/novels.model';
-import { User } from './users.model';
+import { User } from '../users/users.model';
 
 //поля необходимые для создания объекта
 interface UserCreationAttrs {
