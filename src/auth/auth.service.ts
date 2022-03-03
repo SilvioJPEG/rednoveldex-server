@@ -2,13 +2,11 @@ import {
   ForbiddenException,
   HttpException,
   Injectable,
-  UnauthorizedException,
 } from '@nestjs/common';
 import * as argon from 'argon2';
 import { JwtService } from '@nestjs/jwt';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { UsersService } from 'src/users/users.service';
-import * as bcrypt from 'bcryptjs';
 import { Tokens } from './types/Tokens';
 import { User } from 'src/users/users.model';
 

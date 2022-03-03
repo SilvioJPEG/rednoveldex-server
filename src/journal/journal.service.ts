@@ -1,9 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Novel } from 'src/novels/novels.model';
 import { JournalOfNovels } from './journal-of-novels.model';
 import { Journal } from './journal.model';
-
 @Injectable()
 export class JournalService {
   constructor(
@@ -26,7 +25,35 @@ export class JournalService {
     });
     return novels;
   }
-  async update(journalUpdateDto) {
-      //TODO
+
+  async update(userId: number, novelId: number) {
+    const journal = await this.journalRepository.findOne({
+      where: { ownerId: userId },
+    });
+    if (!journal) throw new HttpException('journal not found', 404);
+    const { InJournal, novelEntry } = await this.checkIfInJournal(
+      userId,
+      novelId,
+    );
+    if (InJournal) {
+      this.JONRepository.destroy({ where: { id: novelEntry.id } });
+    } else {
+      this.JONRepository.create({ novelId: novelId, journalId: (journal.id) });
+    }
+  }
+
+  async checkIfInJournal(userId: number, novelId: number) {
+    const journal = await this.journalRepository.findOne({
+      where: { ownerId: userId },
+    });
+    if (!journal) throw new HttpException('journal not found', 404);
+    const novelEntry = await this.JONRepository.findOne({
+      where: { novelId: novelId, journalId: journal.id },
+    });
+    if (novelEntry) {
+      return { InJournal: true, novelEntry };
+    } else {
+      return { InJournal: false, novelEntry };
+    }
   }
 }
