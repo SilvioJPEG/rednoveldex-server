@@ -62,5 +62,5 @@ export class User extends Model<User, UserCreationAttrs> {
   journal: Journal;
 
   @Column({ type: DataType.STRING })
-  accessToken: string;
+  refreshToken: string;
 }

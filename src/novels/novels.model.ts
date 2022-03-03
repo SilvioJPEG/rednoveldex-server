@@ -29,7 +29,7 @@ export class Novel extends Model<Novel, NovelCreationAttrs> {
   @Column({ type: DataType.STRING, unique: true, allowNull: false })
   title: string;
 
-  @Column({ type: DataType.STRING })
+  @Column({ type: DataType.TEXT })
   description: string;
 
   @Column({ type: DataType.DATE })

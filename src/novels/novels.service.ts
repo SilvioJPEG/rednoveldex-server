@@ -12,13 +12,13 @@ export class NovelsService {
   ) {}
 
   async getOne(id: number) {
-    const novel = await this.novelRepository.findOne({ where: { id } });
+    const novel = await this.novelRepository.findByPk(id);
     return novel;
   }
 
   async create(dto: AddNovelDto) {
-    const user = await this.novelRepository.create(dto);
-    return user;
+    const novel = await this.novelRepository.create(dto);
+    return novel;
   }
 
   async AddToFavourites(novel_id: number, user_id: number) {

@@ -51,7 +51,7 @@ export class NovelsController {
     return this.novelsService.GetFavouritesByUser(user.id);
   }
 
-  @Get('/:amount')
+  @Get('/recent/:amount')
   async getRecentlyAdded(@Param('amount') amount: number) {
     return this.novelsService.getRecentlyAdded(amount);
   }

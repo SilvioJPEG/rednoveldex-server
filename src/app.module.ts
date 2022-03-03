@@ -22,6 +22,7 @@ import { JournalOfNovels } from './journal/journal-of-novels.model';
   providers: [AppService],
   imports: [
     ConfigModule.forRoot({
+      isGlobal: true,
       envFilePath: '.env',
     }),
     SequelizeModule.forRoot({
