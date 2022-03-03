@@ -60,4 +60,7 @@ export class User extends Model<User, UserCreationAttrs> {
 
   @HasOne(() => Journal)
   journal: Journal;
+
+  @Column({ type: DataType.STRING })
+  accessToken: string;
 }

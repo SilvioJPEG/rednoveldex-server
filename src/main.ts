@@ -1,8 +1,9 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+
 async function start() {
-  const PORT = process.env.PORT || 5000;
+  const PORT = parseInt(process.env.SERVER_PORT) || 5000;
   const app = await NestFactory.create(AppModule);
   const options = {
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
@@ -10,7 +11,7 @@ async function start() {
     origin: true,
     credentials: true,
   };
-  //app.use(cors(options))
+
   app.enableCors(options);
 
   const config = new DocumentBuilder()

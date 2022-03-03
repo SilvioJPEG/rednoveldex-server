@@ -14,7 +14,6 @@ import { Review } from './reviews/reviews.model';
 import { PostsModule } from './posts/posts.module';
 import { Post } from './posts/posts.model';
 import { userFavourites } from './novels/user-favourites.model';
-import { JournalController } from './journal/journal.controller';
 import { JournalModule } from './journal/journal.module';
 import { Journal } from './journal/journal.model';
 import { JournalOfNovels } from './journal/journal-of-novels.model';
@@ -29,8 +28,8 @@ import { JournalOfNovels } from './journal/journal-of-novels.model';
       dialect: 'postgres',
       host: process.env.POSTGRES_HOST,
       port: Number(process.env.POSTGRES_PORT),
-      username: 'postgres',
-      password: 'postpass',
+      username: process.env.POSTGRES_USERNAME,
+      password: process.env.POSTGRES_PASSWORD,
       database: process.env.POSTGRES_DB,
       models: [User, Novel, userFavourites, List, ListOfNovels, Review, Post, Journal, JournalOfNovels],
       autoLoadModels: true, //чтобы sequelize создавал в бд таблицы на основании созданных моделей

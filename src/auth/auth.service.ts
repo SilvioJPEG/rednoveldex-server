@@ -8,6 +8,7 @@ import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { UsersService } from 'src/users/users.service';
 import * as bcrypt from 'bcryptjs';
 import { User } from 'src/users/users.model';
+import { Tokens } from './types/Tokens';
 
 @Injectable()
 export class AuthService {
@@ -16,10 +17,24 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  private async generateToken(user: User) {
-    const payload = { username: user.username, id: user.id };
+  private async generateTokens(
+    username: string,
+    user_id: number,
+  ): Promise<Tokens> {
+    const payload = { username: username, id: user_id };
+    const [accessToken, refreshToken] = await Promise.all([
+      //access token
+      this.jwtService.signAsync(payload, {
+        expiresIn: 60 * 15,
+      }),
+      //refresh token
+      this.jwtService.signAsync(payload, {
+        expiresIn: 60 * 60 * 24 * 7,
+      }),
+    ]);
     return {
-      accessToken: this.jwtService.sign(payload),
+      refreshToken,
+      accessToken,
     };
   }
 
@@ -37,7 +52,7 @@ export class AuthService {
     });
   }
 
-  async registration(userDto: CreateUserDto) {
+  async registration(userDto: CreateUserDto): Promise<Tokens> {
     console.log(userDto);
     const candidate = await this.usersService.getUserByName(userDto.username);
     if (candidate) {
@@ -51,13 +66,21 @@ export class AuthService {
       ...userDto,
       password: hashPassword,
     });
-    return this.generateToken(user);
+    const tokens = await this.generateTokens(user.username, user.id);
+    user.update({accessToken: tokens.accessToken});
+    return tokens;
   }
 
   async login(userDto: CreateUserDto) {
     const user = await this.validateUser(userDto);
-    const accessToken = await this.generateToken(user);
+    const { accessToken, refreshToken } = await this.generateTokens(
+      user.username,
+      user.id,
+    );
     const profile = await this.usersService.getUserProfile(user.username);
-    return { user: profile, accessToken };
+    return { user: profile, accessToken, refreshToken };
+  }
+
+  private saveAccessToken() {
   }
 }

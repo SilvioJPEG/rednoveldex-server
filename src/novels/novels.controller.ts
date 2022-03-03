@@ -21,7 +21,7 @@ export class NovelsController {
     private usersService: UsersService,
   ) {}
 
-  @Post()
+  @Post('/add')
   @UseGuards(JwtAuthGuard)
   create(@Body() novelDto: AddNovelDto) {
     return this.novelsService.create(novelDto);
