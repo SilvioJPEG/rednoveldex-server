@@ -60,4 +60,13 @@ export class UsersService {
     if (!user) throw new HttpException('user not found', 404);
     await user.update({ refreshToken: null });
   }
+
+  async updateUserData(userId: number, newData: User) {
+    const user = await this.userRepository.findByPk(userId);
+    return await user.update(newData);
+  }
+  async deleteUser(userId: number) {
+    const user = await this.userRepository.findByPk(userId);
+    //TODO: delete not only user but instances in other databases as well
+  }
 }

@@ -11,8 +11,9 @@ import { User } from 'src/users/users.model';
 
 //поля необходимые для создания объекта
 interface ReviewCreationAttrs {
-  username: string;
-  password: string;
+  content: string;
+  userId: number;
+  novelId: number;
 }
 
 @Table({ tableName: 'reviews' })

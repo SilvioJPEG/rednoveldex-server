@@ -39,8 +39,8 @@ export class JournalController {
   @Post('/check')
   @HttpCode(HttpStatus.OK)
   @UseGuards(JwtAuthGuard)
-  async checkIfInJournal(@Req() req, @Body() novelId: number) {
+  async checkIfInJournal(@Req() req, @Body() body: { novelId: number }) {
     const user = req.user;
-    return this.journalService.checkIfInJournal(user.sub, novelId);
+    return this.journalService.checkIfInJournal(user.sub, body.novelId);
   }
 }

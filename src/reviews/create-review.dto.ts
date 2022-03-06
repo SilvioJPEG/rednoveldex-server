@@ -8,8 +8,5 @@ export class createReviewDto {
     readonly content: string;
     
     @IsNumber()
-    readonly userId: number;
-    
-    @IsNumber()
     readonly novelId: number;
 }

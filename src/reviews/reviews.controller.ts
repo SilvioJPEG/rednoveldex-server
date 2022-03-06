@@ -3,9 +3,12 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
+  HttpStatus,
   Param,
   Patch,
   Post,
+  Req,
   UseGuards,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
@@ -21,13 +24,16 @@ export class ReviewsController {
   @ApiOperation({ summary: 'review creation' })
   @ApiResponse({ status: 200, type: Review })
   @Post()
+  @HttpCode(HttpStatus.OK)
   @UseGuards(JwtAuthGuard)
-  create(@Body() reviewDto: createReviewDto) {
-    return this.reviewsService.createReview(reviewDto);
+  create(@Req() req, @Body() reviewDto: createReviewDto) {
+    return this.reviewsService.createReview(req.user.sub, reviewDto);
   }
 
-  //get a specific amount of reviews for novel with novelId
+  @ApiOperation({ summary: 'Get :amount of latest reviews' })
+  @ApiResponse({ status: 200, type: [Review] })
   @Get('/:novelId/:amount')
+  @HttpCode(HttpStatus.OK)
   getLatestReviews(
     @Param('novelId') novelId: number,
     @Param('amount') amount: number,
@@ -35,17 +41,21 @@ export class ReviewsController {
     return this.reviewsService.getLatestReviews(novelId, amount);
   }
 
-  //update review content
+  @ApiOperation({ summary: "Update review's text, return new review data" })
+  @ApiResponse({ status: 200, type: Review })
   @Patch()
+  @HttpCode(HttpStatus.OK)
   @UseGuards(JwtAuthGuard)
-  update(@Body() dto: createReviewDto) {
-    return this.reviewsService.updateReview(dto);
+  update(@Req() req, @Body() dto: createReviewDto) {
+    return this.reviewsService.updateReview(req.user.sub, dto);
   }
 
-  //delete review
-  @Delete('/:userId/:novelId/')
+  @ApiOperation({ summary: 'Deletes review by id ' })
+  @ApiResponse({ status: 200 })
+  @Delete('/:novelId/')
+  @HttpCode(HttpStatus.OK)
   @UseGuards(JwtAuthGuard)
-  delete(@Param('userId') userId: number, @Param('novelId') novelId: number) {
-    return this.reviewsService.deleteReview(userId, novelId);
+  delete(@Req() req, @Param('novelId') novelId: number) {
+    return this.reviewsService.deleteReview(req.user.sub, novelId);
   }
 }

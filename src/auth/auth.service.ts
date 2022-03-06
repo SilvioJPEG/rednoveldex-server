@@ -1,8 +1,4 @@
-import {
-  ForbiddenException,
-  HttpException,
-  Injectable,
-} from '@nestjs/common';
+import { ForbiddenException, HttpException, Injectable } from '@nestjs/common';
 import * as argon from 'argon2';
 import { JwtService } from '@nestjs/jwt';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
@@ -51,7 +47,7 @@ export class AuthService {
     return user;
   }
 
-  async registration(userDto: CreateUserDto): Promise<Tokens> {
+  async registration(userDto: CreateUserDto) {
     const candidate = await this.usersService.checkIfExists(userDto.username);
     if (candidate) {
       throw new HttpException(
@@ -64,9 +60,17 @@ export class AuthService {
       ...userDto,
       password: hashPassword,
     });
-    const tokens = await this.generateTokens(user.username, user.id);
-    user.update({ refreshToken: tokens.refreshToken});
-    return tokens;
+    const { refreshToken, accessToken } = await this.generateTokens(
+      user.username,
+      user.id,
+    );
+    user.update({ refreshToken: refreshToken });
+    const profile = await this.usersService.getUserProfile(user.username);
+    return {
+      accessToken: accessToken,
+      refreshToken: refreshToken,
+      profile: profile,
+    };
   }
 
   async login(userDto: CreateUserDto) {
@@ -77,7 +81,7 @@ export class AuthService {
     );
     this.usersService.updateRefreshToken(user.id, refreshToken);
     const profile = await this.usersService.getUserProfile(user.username);
-    return { user: profile, accessToken, refreshToken };
+    return { profile: profile, accessToken, refreshToken };
   }
 
   async logout(userId: number) {

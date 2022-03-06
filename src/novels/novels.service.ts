@@ -21,31 +21,6 @@ export class NovelsService {
     return novel;
   }
 
-  async AddToFavourites(novel_id: number, user_id: number) {
-    const favourited = await this.UFRep.create({ user_id, novel_id });
-    return favourited;
-  }
-
-  async DeleteFromFavourites(novel_id: number, user_id: number) {
-    const unfavourited = await this.UFRep.destroy({
-      where: { user_id, novel_id },
-    });
-    return unfavourited;
-  }
-
-  async GetFavouritesByUser(user_id: number) {
-    let favourites: Novel[] = [];
-    this.UFRep.findAll({ where: { user_id } }).then(
-      (userFavs: userFavourites[]) => {
-        userFavs.forEach(async (userFav: userFavourites) => {
-          let favNovel = await this.novelRepository.findByPk(userFav.novel_id);
-          if (favNovel) favourites.push(favNovel);
-        });
-      },
-    );
-    return favourites;
-  }
-
   async getRecentlyAdded(amount: number) {
     const novels = await this.novelRepository.findAll();
     novels.sort((a, b) => {

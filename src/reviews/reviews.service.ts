@@ -7,18 +7,22 @@ import { Review } from './reviews.model';
 export class ReviewsService {
   constructor(@InjectModel(Review) private reviewRepository: typeof Review) {}
 
-  async createReview(dto: createReviewDto) {
+  async createReview(userId: number, dto: createReviewDto) {
     let review = await this.reviewRepository.findOne({
-      where: { userId: dto.userId, novelId: dto.novelId },
+      where: { userId: userId, novelId: dto.novelId },
     });
     if (!review) {
-      review = await this.reviewRepository.create(dto);
+      review = await this.reviewRepository.create({
+        userId: userId,
+        novelId: dto.novelId,
+        content: dto.content,
+      });
     }
     return review;
   }
-  async updateReview(dto: createReviewDto) {
+  async updateReview(userId: number, dto: createReviewDto) {
     let review = await this.reviewRepository.findOne({
-      where: { novelId: dto.novelId, userId: dto.userId },
+      where: { novelId: dto.novelId, userId: userId },
     });
     if (review) review.update({ content: dto.content });
   }
