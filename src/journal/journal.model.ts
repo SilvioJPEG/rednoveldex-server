@@ -14,7 +14,7 @@ import { JournalOfNovels } from './journal-of-novels.model';
 
 //поля необходимые для создания объекта
 interface JournalCreationAttrs {
-  ownerId: number;
+  owner_id: number;
 }
 
 @Table({ tableName: 'journals' })
@@ -32,7 +32,7 @@ export class Journal extends Model<Journal, JournalCreationAttrs> {
 
   @ForeignKey(() => User)
   @Column({ type: DataType.INTEGER, allowNull: false })
-  ownerId: number;
+  owner_id: number;
   @BelongsTo(() => User)
   user: User;
 }

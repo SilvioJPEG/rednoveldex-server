@@ -9,8 +9,8 @@ import { Novel } from 'src/novels/novels.model';
 import { Journal } from '../journal/journal.model';
 
 interface JournalOfNovelsAttrs {
-    novelId: number;
-    journalId: number;
+    novel_id: number;
+    journal_id: number;
 }
 
 @Table({ tableName: 'journal_of_novels' })
@@ -28,9 +28,9 @@ export class JournalOfNovels extends Model<
 
   @ForeignKey(() => Novel)
   @Column({ type: DataType.INTEGER, allowNull: false })
-  novelId: number;
+  novel_id: number;
 
   @ForeignKey(() => Journal)
   @Column({ type: DataType.INTEGER, allowNull: false })
-  journalId: number;
+  journal_id: number;
 }

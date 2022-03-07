@@ -7,8 +7,8 @@ import { List } from './lists.model';
 export class ListsService {
   constructor(@InjectModel(List) private ListRepository: typeof List) {}
 
-  async getListByUser(userId: number) {
-    let list = await this.ListRepository.findOne({ where: { userId: userId } });
+  async getListByUser(user_id: number) {
+    let list = await this.ListRepository.findOne({ where: { user_id: user_id } });
     return list;
   }
 

@@ -1,51 +1,63 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
+import { User } from 'src/users/users.model';
 import { createReviewDto } from './create-review.dto';
 import { Review } from './reviews.model';
 
 @Injectable()
 export class ReviewsService {
-  constructor(@InjectModel(Review) private reviewRepository: typeof Review) {}
+  constructor(
+    @InjectModel(Review) private reviewRepository: typeof Review,
+    @InjectModel(User) private userRepository: typeof User,
+  ) {}
 
-  async createReview(userId: number, dto: createReviewDto) {
+  async createReview(user_id: number, dto: createReviewDto) {
     let review = await this.reviewRepository.findOne({
-      where: { userId: userId, novelId: dto.novelId },
+      where: { user_id: user_id, novel_id: dto.novel_id },
     });
     if (!review) {
       review = await this.reviewRepository.create({
-        userId: userId,
-        novelId: dto.novelId,
+        user_id: user_id,
+        novel_id: dto.novel_id,
         content: dto.content,
       });
     }
     return review;
   }
-  async updateReview(userId: number, dto: createReviewDto) {
+  async updateReview(user_id: number, dto: createReviewDto) {
     let review = await this.reviewRepository.findOne({
-      where: { novelId: dto.novelId, userId: userId },
+      where: { novel_id: dto.novel_id, user_id: user_id },
     });
     if (review) review.update({ content: dto.content });
   }
 
-  async deleteReview(userId: number, novelId: number) {
+  async deleteReview(user_id: number, novel_id: number) {
     let review = await this.reviewRepository.findOne({
-      where: { novelId, userId },
+      where: { novel_id, user_id },
     });
     if (review) review.destroy();
   }
 
-  async getLatestReviews(novelId: number, amount: number) {
+  async getLatestReviews(novel_id: number, amount: number) {
     let reviews = await this.reviewRepository.findAll({
-      where: { novelId },
+      where: { novel_id },
     });
     reviews.sort((a, b) => {
       if (a.createdAt < b.createdAt) return -1;
       if (a.createdAt > b.createdAt) return 1;
     });
-    if (amount >= reviews.length) {
-      return reviews;
-    } else {
-      return reviews.slice(0, amount - 1);
+    if (amount < reviews.length) {
+      reviews = reviews.slice(0, amount - 1);
     }
+    let resBody = await Promise.all(
+      reviews.map(async (review: Review) => {
+        let user = await this.userRepository.findByPk(review.user_id);
+        return {
+          user: { username: user.username, avatar: user.avatar },
+          content: review.content,
+        };
+      }),
+    );
+    return resBody;
   }
 }

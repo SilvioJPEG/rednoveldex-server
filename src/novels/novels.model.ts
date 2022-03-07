@@ -29,14 +29,17 @@ export class Novel extends Model<Novel, NovelCreationAttrs> {
   @Column({ type: DataType.STRING, unique: true, allowNull: false })
   title: string;
 
+  @Column({ type: DataType.STRING })
+  original_title: string;
+
   @Column({ type: DataType.TEXT })
   description: string;
 
   @Column({ type: DataType.DATE })
-  releaseDate: number;
+  releaseDate: string;
 
   @Column({ type: DataType.STRING })
-  poster: string;
+  image: string;
 
   //user can add it to favourites
   @BelongsToMany(() => User, () => userFavourites)

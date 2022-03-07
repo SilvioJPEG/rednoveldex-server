@@ -13,7 +13,7 @@ export class UsersService {
 
   async createUser(dto: CreateUserDto) {
     const user = await this.userRepository.create(dto);
-    await this.journalRepository.create({ ownerId: user.id });
+    await this.journalRepository.create({ owner_id: user.id });
     return user;
   }
   async checkIfExists(username: string): Promise<User> {

@@ -12,8 +12,8 @@ import { User } from 'src/users/users.model';
 //поля необходимые для создания объекта
 interface ReviewCreationAttrs {
   content: string;
-  userId: number;
-  novelId: number;
+  user_id: number;
+  novel_id: number;
 }
 
 @Table({ tableName: 'reviews' })
@@ -31,13 +31,13 @@ export class Review extends Model<Review, ReviewCreationAttrs> {
 
   @ForeignKey(() => User)
   @Column({ type: DataType.INTEGER, allowNull: false })
-  userId: number;
+  user_id: number;
   @BelongsTo(() => User)
   user: User;
 
   @ForeignKey(() => Novel)
   @Column({ type: DataType.INTEGER, allowNull: false })
-  novelId: number;
+  novel_id: number;
   @BelongsTo(() => Novel)
   novel: Novel;
 }

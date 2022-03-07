@@ -11,44 +11,44 @@ export class JournalService {
     @InjectModel(Novel) private novelRepository: typeof Novel,
   ) {}
 
-  async getByOwnerId(ownerId: number) {
+  async getByOwnerId(owner_id: number) {
     const journal = await this.journalRepository.findOne({
-      where: { ownerId },
+      where: { owner_id },
     });
     const JON = await this.JONRepository.findAll({
-      where: { journalId: journal.id },
+      where: { journal_id: journal.id },
     });
     let novels: Novel[] = [];
     JON.forEach(async (el) => {
-      const novel = await this.novelRepository.findByPk(el.novelId);
+      const novel = await this.novelRepository.findByPk(el.novel_id);
       novels.push(novel);
     });
     return novels;
   }
 
-  async update(userId: number, novelId: number) {
+  async update(user_id: number, novel_id: number) {
     const journal = await this.journalRepository.findOne({
-      where: { ownerId: userId },
+      where: { owner_id: user_id },
     });
     if (!journal) throw new HttpException('journal not found', 404);
     const { InJournal, novelEntry } = await this.checkIfInJournal(
-      userId,
-      novelId,
+      user_id,
+      novel_id,
     );
     if (InJournal) {
       this.JONRepository.destroy({ where: { id: novelEntry.id } });
     } else {
-      this.JONRepository.create({ novelId: novelId, journalId: (journal.id) });
+      this.JONRepository.create({ novel_id: novel_id, journal_id: (journal.id) });
     }
   }
 
-  async checkIfInJournal(userId: number, novelId: number) {
+  async checkIfInJournal(user_id: number, novel_id: number) {
     const journal = await this.journalRepository.findOne({
-      where: { ownerId: userId },
+      where: { owner_id: user_id },
     });
     if (!journal) throw new HttpException('journal not found', 404);
     const novelEntry = await this.JONRepository.findOne({
-      where: { novelId: novelId, journalId: journal.id },
+      where: { novel_id: novel_id, journal_id: journal.id },
     });
     if (novelEntry) {
       return { InJournal: true, novelEntry };

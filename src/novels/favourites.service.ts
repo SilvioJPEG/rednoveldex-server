@@ -12,7 +12,7 @@ export class FavouritesService {
   ) {}
 
   async updateFavourites(novel_id: number, user_id: number) {
-    const inFavourites = await this.checkIfFavourited(novel_id, user_id);
+    const inFavourites = (await this.checkIfFavourited(novel_id, user_id)).InFavourites;
     if (inFavourites) {
       const unfavourited = await this.UFRep.destroy({
         where: { user_id, novel_id },
@@ -22,7 +22,10 @@ export class FavouritesService {
       return favourited;
     }
   }
-  async checkIfFavourited(novel_id: number, user_id: number): Promise<boolean> {
+  async checkIfFavourited(
+    novel_id: number,
+    user_id: number,
+  ): Promise<{ InFavourites: boolean }> {
     const novel = await this.UFRep.findOne({
       where: {
         novel_id: novel_id,
@@ -30,9 +33,9 @@ export class FavouritesService {
       },
     });
     if (novel) {
-      return true;
+      return { InFavourites: true };
     } else {
-      return false;
+      return { InFavourites: false };
     }
   }
 

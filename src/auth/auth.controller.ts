@@ -23,8 +23,22 @@ export class AuthController {
 
   @Post('/registration')
   @HttpCode(HttpStatus.CREATED)
-  registration(@Body() userDto: CreateUserDto) {
-    return this.authService.registration(userDto);
+  async registration(
+    @Body() userDto: CreateUserDto,
+    @Res({ passthrough: true }) response: Response,
+  ) {
+    const result = await this.authService.registration(userDto);
+    response
+      .cookie('access_token', result.accessToken, {
+        httpOnly: true,
+        domain: 'localhost', // your domain here!
+        expires: new Date(Date.now() + 1000 * 60 * 60 * 24),
+      })
+      .cookie('signed_as', result.profile.username, {
+        domain: 'localhost', // your domain here!
+        expires: new Date(Date.now() + 1000 * 60 * 60 * 24),
+      });
+    return { user: result.profile };
   }
 
   @Post('/login')
@@ -44,7 +58,7 @@ export class AuthController {
         domain: 'localhost', // your domain here!
         expires: new Date(Date.now() + 1000 * 60 * 60 * 24),
       });
-    return {user: result.profile};
+    return { user: result.profile };
   }
 
   @Post('/logout')

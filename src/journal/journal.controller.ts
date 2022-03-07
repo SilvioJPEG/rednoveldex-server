@@ -33,14 +33,14 @@ export class JournalController {
   @UseGuards(JwtAuthGuard)
   async update(@Req() req, @Body() updateJournalDto: updateJournalDto) {
     const user = req.user;
-    return this.journalService.update(user.sub, updateJournalDto.novelId);
+    return this.journalService.update(user.sub, updateJournalDto.novel_id);
   }
 
   @Post('/check')
   @HttpCode(HttpStatus.OK)
   @UseGuards(JwtAuthGuard)
-  async checkIfInJournal(@Req() req, @Body() body: { novelId: number }) {
+  async checkIfInJournal(@Req() req, @Body() body: { novel_id: number }) {
     const user = req.user;
-    return this.journalService.checkIfInJournal(user.sub, body.novelId);
+    return this.journalService.checkIfInJournal(user.sub, body.novel_id);
   }
 }

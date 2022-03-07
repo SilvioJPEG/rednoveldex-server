@@ -1,4 +1,4 @@
 export type updateJournalDto = {
-    novelId: number;
+    novel_id: number;
 };
   

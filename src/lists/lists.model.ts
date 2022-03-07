@@ -38,7 +38,7 @@ export class List extends Model<List, ListCreationAttrs> {
 
   @ForeignKey(() => User)
   @Column({ type: DataType.INTEGER, allowNull: false })
-  userId: number;
+  user_id: number;
   @BelongsTo(() => User)
   user: User;
 }
