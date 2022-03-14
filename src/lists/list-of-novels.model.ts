@@ -9,8 +9,8 @@ import { Novel } from 'src/novels/novels.model';
 import { List } from './lists.model';
 
 interface ListOfNovelsAttrs {
-  novelId: number;
-  listId: number;
+  novel_id: number;
+  list_id: number;
 }
 
 @Table({ tableName: 'list_of_novels' })
@@ -25,10 +25,10 @@ export class ListOfNovels extends Model<ListOfNovels, ListOfNovelsAttrs> {
 
   @ForeignKey(() => Novel)
   @Column({ type: DataType.INTEGER, allowNull: false })
-  novelId: number;
+  novel_id: number;
 
   @ForeignKey(() => List)
   @Column({ type: DataType.INTEGER, allowNull: false })
-  listId: number;
+  list_id: number;
 
 }

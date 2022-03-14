@@ -2,12 +2,11 @@ import { Module } from '@nestjs/common';
 
 import { SequelizeModule } from '@nestjs/sequelize';
 import { AuthModule } from 'src/auth/auth.module';
-import { JournalOfNovels } from 'src/journal/journal-of-novels.model';
+import { JournalEntity } from 'src/journal/journal-entity.model';
 import { Journal } from 'src/journal/journal.model';
 import { List } from 'src/lists/lists.model';
 import { User } from 'src/users/users.model';
 import { UsersModule } from 'src/users/users.module';
-import { UsersService } from 'src/users/users.service';
 import { FavouritesService } from './favourites.service';
 import { NovelsController } from './novels.controller';
 import { Novel } from './novels.model';
@@ -24,10 +23,11 @@ import { userFavourites } from './user-favourites.model';
       User,
       userFavourites,
       Journal,
-      JournalOfNovels,
+      JournalEntity,
     ]),
     UsersModule,
     AuthModule,
   ],
+  exports: [FavouritesService, NovelsService]
 })
 export class NovelsModule {}

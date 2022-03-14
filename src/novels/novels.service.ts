@@ -1,7 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Op } from 'sequelize';
-import { AddNovelDto } from './add-novel.dto';
+import { AddNovelDto, novelVNDB } from './add-novel.dto';
 import { Novel } from './novels.model';
 const VNDB = require('vndb-api');
 @Injectable()
@@ -9,21 +9,41 @@ export class NovelsService {
   constructor(@InjectModel(Novel) private novelRepository: typeof Novel) {}
 
   async getOne(id: number) {
-    const novel = await this.novelRepository.findByPk(id);
+    const novel = await this.novelRepository.findByPk(id, {
+      attributes: { exclude: ['createdAt', 'updatedAt', 'id'] },
+    });
     return novel;
   }
 
-  async create(dto: AddNovelDto) {
+  async create(title: string) {
+    const vndb = new VNDB('rednovel', { minConnection: 1, maxConnection: 10 });
+    let item: novelVNDB = await vndb
+      .query(`get vn basic,details,anime (title ~ "${title}")`)
+      .then((response) => {
+        return response.items[0];
+      })
+      .catch((err) => {
+        console.log(err);
+      })
+      .finally(() => {
+        vndb.destroy();
+      });
+    const dto: AddNovelDto = {
+      title: item.title,
+      aliases: item.aliases,
+      orig_lang: item.orig_lang[0],
+      image: item.image,
+      release_date: item.released,
+      description: item.description,
+    };
     const novel = await this.novelRepository.create(dto);
     return novel;
   }
 
   async getRecentlyAdded(amount: number) {
-    const novels = await this.novelRepository.findAll();
-    novels.sort((a, b) => {
-      if (a.createdAt < b.createdAt) return -1;
-      if ((a.createdAt = b.createdAt)) return -1;
-      if (a.createdAt > b.createdAt) return 1;
+    const novels = await this.novelRepository.findAll({
+      order: [['createdAt', 'DESC']],
+      attributes: ['title', 'id', 'image'],
     });
     if (amount >= novels.length) {
       return novels;
@@ -33,24 +53,38 @@ export class NovelsService {
 
   async searchFor(search: string) {
     const novels = await this.novelRepository.findAll({
-      where: { title: { [Op.like]: `%${search}%` } },
+      where: { title: { [Op.iLike]: `%${search}%` } },
+      attributes: ['id', 'title', 'image'],
     });
-    if (novels) {
-      const results = novels.map((element: Novel) => {
-        return { id: element.id, title: element.title, poster: element.image };
-      });
-      console.log(results);
-      return results;
-    } else return [];
+    if (!novels) {
+      throw new NotFoundException('not found');
+    }
+    return novels;
   }
 
-  async findInVNDB(title: string) {
+  private async checkIfExists(title: string): Promise<boolean> {
+    const novel = await this.novelRepository.findOne({
+      where: { title: title },
+    });
+    if (novel !== null) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+  async findInVNDB(title: string): Promise<string[]> {
     // Create a client
     const vndb = new VNDB('rednovel', { minConnection: 1, maxConnection: 10 });
-    let items = await vndb
+    let titles: string[] = await vndb
       .query(`get vn basic,details,anime (title ~ "${title}")`)
-      .then((response) => {
-        return response.items;
+      .then(async (response) => {
+        let titles = await Promise.all(
+          response.items.map(async (novel: novelVNDB) => {
+            const bool = await this.checkIfExists(novel.title);
+            if (!bool) return novel.title;
+          }),
+        );
+        return titles;
       })
       .catch((err) => {
         console.log(err);
@@ -58,7 +92,8 @@ export class NovelsService {
       .finally(() => {
         vndb.destroy();
       });
-    console.log(items);
-    return items[0];
+    return titles.filter((el) => {
+      return el !== undefined;
+    });
   }
 }

@@ -6,13 +6,16 @@ export class AddNovelDto {
   readonly title: string;
 
   @IsString()
-  readonly original?: string;
+  readonly aliases?: string;
+
+  @IsString()
+  readonly orig_lang?: string;
 
   @IsString()
   readonly image?: string;
 
   @IsString()
-  readonly releaseDate?: string;
+  readonly release_date?: string;
 
   @IsString()
   readonly description?: string;
@@ -21,7 +24,8 @@ export class AddNovelDto {
 export type novelVNDB = {
   id: number;
   title: string;
-  original?: string;
+  aliases?: string;
+  orig_lang?: string;
   image?: string;
   released?: string;
   description?: string;

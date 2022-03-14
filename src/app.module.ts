@@ -11,15 +11,16 @@ import { List } from './lists/lists.model';
 import { ListOfNovels } from './lists/list-of-novels.model';
 import { ReviewsModule } from './reviews/reviews.module';
 import { Review } from './reviews/reviews.model';
-import { PostsModule } from './posts/posts.module';
-import { Post } from './posts/posts.model';
 import { userFavourites } from './novels/user-favourites.model';
 import { JournalModule } from './journal/journal.module';
 import { Journal } from './journal/journal.model';
-import { JournalOfNovels } from './journal/journal-of-novels.model';
+import { JournalEntity } from './journal/journal-entity.model';
+import { ListsModule } from './lists/lists.module';
+import { AppController } from './app.controller';
 
 @Module({
   providers: [AppService],
+  controllers: [AppController],
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
@@ -32,16 +33,24 @@ import { JournalOfNovels } from './journal/journal-of-novels.model';
       username: process.env.POSTGRES_USERNAME,
       password: process.env.POSTGRES_PASSWORD,
       database: process.env.POSTGRES_DB,
-      models: [User, Novel, userFavourites, List, ListOfNovels, Review, Post, Journal, JournalOfNovels],
+      models: [
+        User,
+        Novel,
+        userFavourites,
+        List,
+        ListOfNovels,
+        Review,
+        Journal,
+        JournalEntity,
+      ],
       autoLoadModels: true, //чтобы sequelize создавал в бд таблицы на основании созданных моделей
     }),
     UsersModule,
+    ReviewsModule,
+    ListsModule,
     AuthModule,
     NovelsModule,
-    ReviewsModule,
-    PostsModule,
     JournalModule,
   ],
-  controllers: [],
 })
 export class AppModule {}

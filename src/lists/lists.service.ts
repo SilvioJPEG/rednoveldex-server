@@ -1,28 +1,55 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
+import { Novel } from 'src/novels/novels.model';
 import { CreateListDto } from './create-list.dto';
+import { ListOfNovels } from './list-of-novels.model';
 import { List } from './lists.model';
 
 @Injectable()
 export class ListsService {
-  constructor(@InjectModel(List) private ListRepository: typeof List) {}
+  constructor(
+    @InjectModel(List) private ListRepository: typeof List,
+    @InjectModel(ListOfNovels) private LONRepository: typeof ListOfNovels,
+  ) {}
 
-  async getListByUser(user_id: number) {
-    let list = await this.ListRepository.findOne({ where: { user_id: user_id } });
+  async getListsByUser(user_id: number): Promise<List[]> {
+    const lists = await this.ListRepository.findAll({
+      include: [{ model: Novel, attributes: ['id', 'image', 'title'] }],
+      where: { user_id: user_id },
+      attributes: { exclude: ['createdAt', 'updatedAt'] },
+    });
+
+    if (!lists) {
+      throw new NotFoundException('lists not found');
+    }
+    return lists;
+  }
+
+  async getAmountByUser(user_id: number): Promise<{ listsAmount: number }> {
+    const amount = (await this.getListsByUser(user_id)).length;
+    return { listsAmount: amount };
+  }
+  async createList(dto: CreateListDto): Promise<List> {
+    const list = await this.ListRepository.create(dto);
+    for (const novel_id of dto.novels) {
+      await this.LONRepository.create({ novel_id, list_id: list.id });
+    }
     return list;
   }
 
-  async createList(dto: CreateListDto) {
-    let list = await this.ListRepository.create(dto);
-    return list;
+  async updateList(updatedList: List): Promise<List> {
+    const list = await this.ListRepository.update(updatedList, {
+      where: { id: updatedList.id },
+    });
+    if (list[0] === 1) {
+      return list[1][1];
+    } else {
+      throw new NotFoundException('list not found');
+    }
   }
 
-  async UpdateList(updatedList: List) {
-
-  }
-
-  async deleteList() {
-    let list = await this.ListRepository.findOne({ where: {} });
+  async deleteList(list_id:number) {
+    const list = await this.ListRepository.findByPk(list_id);
     if (list) {
       list.destroy();
     }

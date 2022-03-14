@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
+import { Novel } from 'src/novels/novels.model';
 import { User } from 'src/users/users.model';
-import { createReviewDto } from './create-review.dto';
+import { createReviewDto, ReviewBasic } from './create-review.dto';
 import { Review } from './reviews.model';
 
 @Injectable()
@@ -38,26 +39,54 @@ export class ReviewsService {
     if (review) review.destroy();
   }
 
-  async getLatestReviews(novel_id: number, amount: number) {
+  async getLatestReviewsByNovel(
+    novel_id: number,
+    amount: number,
+  ): Promise<Review[]> {
     let reviews = await this.reviewRepository.findAll({
-      where: { novel_id },
+      order: [['createdAt', 'DESC']],
+      attributes: ['content', 'id'],
+      include: [
+        {
+          model: Novel,
+          where: { id: novel_id },
+          attributes: ['image', 'title', 'id'],
+        },
+        {
+          model: User,
+          attributes: ['username', 'avatar'],
+        },
+      ],
     });
-    reviews.sort((a, b) => {
-      if (a.createdAt < b.createdAt) return -1;
-      if (a.createdAt > b.createdAt) return 1;
-    });
+
     if (amount < reviews.length) {
       reviews = reviews.slice(0, amount - 1);
     }
-    let resBody = await Promise.all(
-      reviews.map(async (review: Review) => {
-        let user = await this.userRepository.findByPk(review.user_id);
-        return {
-          user: { username: user.username, avatar: user.avatar },
-          content: review.content,
-        };
-      }),
-    );
-    return resBody;
+
+    return reviews;
+  }
+
+  async getLatestReviewOverall(): Promise<Review[]> {
+    const reviews = await this.reviewRepository.findAll({
+      order: [['createdAt', 'DESC']],
+      include: [{ model: Novel, attributes: ['id', 'image', 'title'] }],
+      attributes: {
+        exclude: ['createdAt', 'updatedAt'],
+      },
+    });
+    return reviews.slice(0, 10);
+  }
+
+  async getReviewsByUser(username: string): Promise<Review[]> {
+    let user = await this.userRepository.findOne({
+      where: { username: username },
+    });
+    let reviews = await this.reviewRepository.findAll({
+      include: [{ model: Novel, attributes: ['id', 'image', 'title'] }, {model: User, attributes: ['username', 'avatar']}],
+      order: [['createdAt', 'DESC']],
+      where: { user_id: user.id },
+      attributes: { exclude: ['createdAt', 'updatedAt', 'novel_id'] },
+    });
+    return reviews;
   }
 }

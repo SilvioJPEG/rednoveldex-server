@@ -1,15 +1,19 @@
 import { Module } from '@nestjs/common';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { AuthModule } from 'src/auth/auth.module';
+import { Journal } from 'src/journal/journal.model';
 import { Novel } from 'src/novels/novels.model';
 import { User } from 'src/users/users.model';
+import { UsersService } from 'src/users/users.service';
+import { ListOfNovels } from './list-of-novels.model';
 import { ListsController } from './lists.controller';
 import { List } from './lists.model';
 import { ListsService } from './lists.service';
 
 @Module({
   controllers: [ListsController],
-  providers: [ListsService],
-  imports: [SequelizeModule.forFeature([List, Novel, User]), AuthModule],
+  providers: [ListsService, UsersService],
+  exports: [ListsService],
+  imports: [SequelizeModule.forFeature([List, Novel, User, Journal, ListOfNovels]), AuthModule],
 })
 export class ListsModule {}

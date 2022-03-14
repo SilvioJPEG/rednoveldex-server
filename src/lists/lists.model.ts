@@ -28,9 +28,9 @@ export class List extends Model<List, ListCreationAttrs> {
   id: number;
 
   @Column({ type: DataType.STRING, allowNull: false })
-  title: string;
+  name: string;
 
-  @Column({ type: DataType.STRING })
+  @Column({ type: DataType.TEXT })
   description: string;
 
   @BelongsToMany(() => Novel, () => ListOfNovels)

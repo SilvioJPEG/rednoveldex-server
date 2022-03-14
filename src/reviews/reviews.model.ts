@@ -26,18 +26,18 @@ export class Review extends Model<Review, ReviewCreationAttrs> {
   })
   id: number;
 
-  @Column({ type: DataType.STRING, allowNull: false })
+  @Column({ type: DataType.TEXT, allowNull: false })
   content: string;
 
   @ForeignKey(() => User)
   @Column({ type: DataType.INTEGER, allowNull: false })
   user_id: number;
   @BelongsTo(() => User)
-  user: User;
+  User: User;
 
   @ForeignKey(() => Novel)
   @Column({ type: DataType.INTEGER, allowNull: false })
   novel_id: number;
   @BelongsTo(() => Novel)
-  novel: Novel;
+  Novel: Novel;
 }

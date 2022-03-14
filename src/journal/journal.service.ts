@@ -1,44 +1,46 @@
-import { HttpException, Injectable } from '@nestjs/common';
+import { HttpException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Novel } from 'src/novels/novels.model';
-import { JournalOfNovels } from './journal-of-novels.model';
+import { JournalEntity } from './journal-entity.model';
+
 import { Journal } from './journal.model';
 @Injectable()
 export class JournalService {
   constructor(
     @InjectModel(Journal) private journalRepository: typeof Journal,
-    @InjectModel(JournalOfNovels) private JONRepository: typeof JournalOfNovels,
+    @InjectModel(JournalEntity) private entityRepository: typeof JournalEntity,
     @InjectModel(Novel) private novelRepository: typeof Novel,
   ) {}
 
-  async getByOwnerId(owner_id: number) {
-    const journal = await this.journalRepository.findOne({
-      where: { owner_id },
+  async getJournalByOwnerId(owner_id: number): Promise<JournalEntity[]> {
+    this.entityRepository.belongsTo(Novel, { foreignKey: 'novel_id' });
+    const entities = await this.entityRepository.findAll({
+      include: [
+        { model: Novel, attributes: ['id', 'image', 'title'] },
+        { model: Journal, where: { id: owner_id }, attributes: [] },
+      ],
+      attributes: ['score', 'status', 'started_reading', 'finished_reading'],
     });
-    const JON = await this.JONRepository.findAll({
-      where: { journal_id: journal.id },
-    });
-    let novels: Novel[] = [];
-    JON.forEach(async (el) => {
-      const novel = await this.novelRepository.findByPk(el.novel_id);
-      novels.push(novel);
-    });
-    return novels;
+    console.log
+    return entities;
   }
 
   async update(user_id: number, novel_id: number) {
     const journal = await this.journalRepository.findOne({
       where: { owner_id: user_id },
     });
-    if (!journal) throw new HttpException('journal not found', 404);
+    if (!journal) throw new NotFoundException('journal not found');
     const { InJournal, novelEntry } = await this.checkIfInJournal(
       user_id,
       novel_id,
     );
     if (InJournal) {
-      this.JONRepository.destroy({ where: { id: novelEntry.id } });
+      this.entityRepository.destroy({ where: { id: novelEntry.id } });
     } else {
-      this.JONRepository.create({ novel_id: novel_id, journal_id: (journal.id) });
+      this.entityRepository.create({
+        novel_id: novel_id,
+        journal_id: journal.id,
+      });
     }
   }
 
@@ -46,8 +48,8 @@ export class JournalService {
     const journal = await this.journalRepository.findOne({
       where: { owner_id: user_id },
     });
-    if (!journal) throw new HttpException('journal not found', 404);
-    const novelEntry = await this.JONRepository.findOne({
+    if (!journal) throw new NotFoundException('journal not found');
+    const novelEntry = await this.entityRepository.findOne({
       where: { novel_id: novel_id, journal_id: journal.id },
     });
     if (novelEntry) {
@@ -55,5 +57,13 @@ export class JournalService {
     } else {
       return { InJournal: false, novelEntry };
     }
+  }
+
+  async getJournalLength(user_id: number): Promise<{ journalLength: number }> {
+    const journal = await this.journalRepository.findAll({
+      where: { owner_id: user_id },
+    });
+    if (!journal) throw new NotFoundException('journal not found');
+    return { journalLength: journal.length };
   }
 }

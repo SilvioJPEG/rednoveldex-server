@@ -1,14 +1,21 @@
-import { IsString, Length, IsNumber, IsNotEmpty } from 'class-validator';
+import { IsArray, Length, IsNumber, IsNotEmpty, IsString } from 'class-validator';
 
 export class CreateListDto {
-  @IsString({ message: 'Must be a string' })
+
+  @IsString()
+  readonly name: string;
+
+  @IsString()
+  readonly description: string;
+
+  @IsArray({ message: 'Must be an array' })
   @Length(4, 99, {
     message: 'password length should be between 4 and 99 characters',
   })
   @IsNotEmpty()
-  readonly title: string;
+  readonly novels: number[];
 
-  @IsNumber() 
+  @IsNumber()
   @IsNotEmpty()
-  readonly userId: number;
+  readonly user_id: number;
 }

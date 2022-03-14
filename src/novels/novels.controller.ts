@@ -32,22 +32,18 @@ export class NovelsController {
   @Post('/add')
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.OK)
-  create(@Body() novelDto: AddNovelDto) {
-    return this.novelsService.create(novelDto);
+  create(@Body() { title }: { title: string }) {
+    return this.novelsService.create(title);
   }
 
+  @ApiOperation({ summary: 'find novel in VNDB by title return titles info' })
+  @ApiResponse({ status: 200 })
   @Post('/find/:title')
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.OK)
   async findInVNDB(@Param('title') title: string) {
-    let item: novelVNDB = await this.novelsService.findInVNDB(title);
-    return this.novelsService.create({
-      title: item.title,
-      original: item.original,
-      image: item.image,
-      releaseDate: item.released,
-      description: item.description,
-    });
+    let items: string[] = await this.novelsService.findInVNDB(title);
+    return items;
   }
 
   @ApiOperation({ summary: 'get novel by id' })
@@ -85,7 +81,7 @@ export class NovelsController {
   @Get('favourites/:username/all')
   @HttpCode(HttpStatus.OK)
   async getFavouritesByUser(@Param('username') username: string) {
-    const user = await this.usersService.getUserByName(username);
+    const user = await this.usersService.getUserProfile(username);
     return await this.favouritesService.getFavouritesByUser(user.id);
   }
   @ApiOperation({
@@ -100,8 +96,6 @@ export class NovelsController {
 
   @Get('/search/:data')
   async SearchFor(@Param('data') data: string) {
-    const novels = await this.novelsService.searchFor(data);
-    console.log(novels);
-    return novels;
+    return this.novelsService.searchFor(data);
   }
 }

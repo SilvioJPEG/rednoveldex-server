@@ -2,14 +2,17 @@ import {
   BelongsToMany,
   Column,
   DataType,
+  HasMany,
   Model,
   Table,
 } from 'sequelize-typescript';
-import { JournalOfNovels } from 'src/journal/journal-of-novels.model';
+import { JournalEntity } from 'src/journal/journal-entity.model';
+
 import { Journal } from 'src/journal/journal.model';
 import { ListOfNovels } from 'src/lists/list-of-novels.model';
 import { List } from 'src/lists/lists.model';
 import { userFavourites } from 'src/novels/user-favourites.model';
+import { Review } from 'src/reviews/reviews.model';
 import { User } from 'src/users/users.model';
 
 interface NovelCreationAttrs {
@@ -30,13 +33,16 @@ export class Novel extends Model<Novel, NovelCreationAttrs> {
   title: string;
 
   @Column({ type: DataType.STRING })
-  original_title: string;
+  aliases: string;
+
+  @Column({ type: DataType.STRING })
+  orig_lang: string;
 
   @Column({ type: DataType.TEXT })
   description: string;
 
   @Column({ type: DataType.DATE })
-  releaseDate: string;
+  release_date: string;
 
   @Column({ type: DataType.STRING })
   image: string;
@@ -49,6 +55,9 @@ export class Novel extends Model<Novel, NovelCreationAttrs> {
   @BelongsToMany(() => List, () => ListOfNovels)
   lists: List[];
 
-  @BelongsToMany(() => Journal, () => JournalOfNovels)
+  @BelongsToMany(() => Journal, () => JournalEntity)
   journals: Journal[];
+
+  @HasMany(() => Review)
+  reviews: Review[];
 }

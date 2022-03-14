@@ -10,7 +10,7 @@ import {
 } from 'sequelize-typescript';
 import { Novel } from 'src/novels/novels.model';
 import { User } from 'src/users/users.model';
-import { JournalOfNovels } from './journal-of-novels.model';
+import { JournalEntity } from './journal-entity.model';
 
 //поля необходимые для создания объекта
 interface JournalCreationAttrs {
@@ -27,8 +27,8 @@ export class Journal extends Model<Journal, JournalCreationAttrs> {
   })
   id: number;
 
-  @BelongsToMany(() => Novel, () => JournalOfNovels)
-  novels: Novel[];
+  @HasMany(() => JournalEntity)
+  entities: JournalEntity[];
 
   @ForeignKey(() => User)
   @Column({ type: DataType.INTEGER, allowNull: false })

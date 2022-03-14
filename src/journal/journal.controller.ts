@@ -24,23 +24,31 @@ export class JournalController {
   @Get(':username')
   @HttpCode(HttpStatus.OK)
   async getByUsername(@Param('username') username: string) {
-    const user = await this.usersService.getUserByName(username);
-    return this.journalService.getByOwnerId(user.id);
+    const user = await this.usersService.getUserProfile(username);
+    console.log(user);
+    return this.journalService.getJournalByOwnerId(user.id);
   }
 
   @Patch('/update')
   @HttpCode(HttpStatus.ACCEPTED)
   @UseGuards(JwtAuthGuard)
   async update(@Req() req, @Body() updateJournalDto: updateJournalDto) {
-    const user = req.user;
-    return this.journalService.update(user.sub, updateJournalDto.novel_id);
+    const user_id = req.user.sub;
+    return this.journalService.update(user_id, updateJournalDto.novel_id);
   }
 
   @Post('/check')
   @HttpCode(HttpStatus.OK)
   @UseGuards(JwtAuthGuard)
   async checkIfInJournal(@Req() req, @Body() body: { novel_id: number }) {
-    const user = req.user;
-    return this.journalService.checkIfInJournal(user.sub, body.novel_id);
+    const user_id = req.user.sub;
+    return this.journalService.checkIfInJournal(user_id, body.novel_id);
+  }
+
+  @Post('/count')
+  @HttpCode(HttpStatus.OK)
+  async countJournalEntities(@Body() body: { username: string }) {
+    const user = await this.usersService.getUserProfile(body.username);
+    return this.journalService.getJournalLength(user.id);
   }
 }

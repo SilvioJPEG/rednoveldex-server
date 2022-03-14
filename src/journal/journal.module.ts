@@ -4,7 +4,7 @@ import { AuthModule } from 'src/auth/auth.module';
 import { Novel } from 'src/novels/novels.model';
 import { User } from 'src/users/users.model';
 import { UsersService } from 'src/users/users.service';
-import { JournalOfNovels } from './journal-of-novels.model';
+import { JournalEntity } from './journal-entity.model';
 import { JournalController } from './journal.controller';
 import { Journal } from './journal.model';
 import { JournalService } from './journal.service';
@@ -12,6 +12,7 @@ import { JournalService } from './journal.service';
 @Module({
   controllers: [JournalController],
   providers: [JournalService, UsersService],
-  imports: [SequelizeModule.forFeature([Journal, JournalOfNovels, Novel, User]), AuthModule],
+  exports: [JournalService],
+  imports: [SequelizeModule.forFeature([Journal, JournalEntity, Novel, User]), AuthModule],
 })
 export class JournalModule {}

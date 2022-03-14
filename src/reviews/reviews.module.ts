@@ -12,6 +12,7 @@ import { Journal } from 'src/journal/journal.model';
 @Module({
   providers: [ReviewsService, UsersService],
   controllers: [ReviewsController],
+  exports: [ReviewsService],
   imports: [
     SequelizeModule.forFeature([Review, User, Novel, Journal]), 
     AuthModule
