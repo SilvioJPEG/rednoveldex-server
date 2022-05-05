@@ -13,8 +13,7 @@ import {
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
-import { UsersService } from 'src/users/users.service';
-import { createReviewDto } from './create-review.dto';
+import { createReviewDto, updateReviewDto } from './create-review.dto';
 import { Review } from './reviews.model';
 import { ReviewsService } from './reviews.service';
 
@@ -22,7 +21,6 @@ import { ReviewsService } from './reviews.service';
 export class ReviewsController {
   constructor(
     private reviewsService: ReviewsService,
-    private usersService: UsersService,
   ) {}
 
   @ApiOperation({ summary: 'get latest reviews overall' })
@@ -57,17 +55,26 @@ export class ReviewsController {
   @Patch()
   @HttpCode(HttpStatus.OK)
   @UseGuards(JwtAuthGuard)
-  update(@Req() req, @Body() dto: createReviewDto) {
+  update(@Req() req, @Body() dto: updateReviewDto) {
     return this.reviewsService.updateReview(req.user.sub, dto);
   }
 
   @ApiOperation({ summary: 'Deletes review by id' })
   @ApiResponse({ status: 200 })
-  @Delete('/:novelId/')
+  @Delete('/review_id')
   @HttpCode(HttpStatus.OK)
   @UseGuards(JwtAuthGuard)
-  delete(@Req() req, @Param('novelId') novel_id: number) {
-    return this.reviewsService.deleteReview(req.user.sub, novel_id);
+  delete(@Req() req, @Param('review_id') novel_id: number) {
+    this.reviewsService.deleteReview(req.user.sub, novel_id);
+  }
+
+  @ApiOperation({ summary: 'Checks if current user has review for :novel_id' })
+  @ApiResponse({ status: 200 })
+  @Get('/:novel_id/')
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(JwtAuthGuard)
+  get(@Req() req, @Param('novel_id') novel_id: number) {
+    return this.reviewsService.checkIfAlreadyPosted(req.user.sub, novel_id);
   }
 
   @ApiOperation({ summary: 'Get reviews of user' })

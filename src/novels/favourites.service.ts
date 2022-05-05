@@ -12,11 +12,13 @@ export class FavouritesService {
   ) {}
 
   async updateFavourites(novel_id: number, user_id: number) {
-    const inFavourites = (await this.checkIfFavourited(novel_id, user_id)).InFavourites;
+    const inFavourites = (await this.checkIfFavourited(novel_id, user_id))
+      .InFavourites;
     if (inFavourites) {
       const unfavourited = await this.UFRep.destroy({
         where: { user_id, novel_id },
       });
+      return unfavourited;
     } else {
       const favourited = await this.UFRep.create({ user_id, novel_id });
       return favourited;

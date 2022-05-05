@@ -1,8 +1,12 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Novel } from 'src/novels/novels.model';
 import { User } from 'src/users/users.model';
-import { createReviewDto, ReviewBasic } from './create-review.dto';
+import {
+  createReviewDto,
+  ReviewBasic,
+  updateReviewDto,
+} from './create-review.dto';
 import { Review } from './reviews.model';
 
 @Injectable()
@@ -15,6 +19,17 @@ export class ReviewsService {
   async createReview(user_id: number, dto: createReviewDto) {
     let review = await this.reviewRepository.findOne({
       where: { user_id: user_id, novel_id: dto.novel_id },
+      include: [
+        {
+          model: Novel,
+          where: { id: dto.novel_id },
+          attributes: ['image', 'title', 'id'],
+        },
+        {
+          model: User,
+          attributes: ['id', 'username', 'avatar'],
+        },
+      ],
     });
     if (!review) {
       review = await this.reviewRepository.create({
@@ -22,14 +37,24 @@ export class ReviewsService {
         novel_id: dto.novel_id,
         content: dto.content,
       });
+      review = await this.reviewRepository.findByPk(review.id, {
+        include: [
+          {
+            model: User,
+            attributes: ['id', 'username', 'avatar'],
+          },
+        ],
+        attributes: ['content', 'updatedAt'],
+      });
     }
     return review;
   }
-  async updateReview(user_id: number, dto: createReviewDto) {
+  async updateReview(user_id: number, dto: updateReviewDto): Promise<Review> {
     let review = await this.reviewRepository.findOne({
       where: { novel_id: dto.novel_id, user_id: user_id },
     });
     if (review) review.update({ content: dto.content });
+    return review;
   }
 
   async deleteReview(user_id: number, novel_id: number) {
@@ -45,7 +70,7 @@ export class ReviewsService {
   ): Promise<Review[]> {
     let reviews = await this.reviewRepository.findAll({
       order: [['createdAt', 'DESC']],
-      attributes: ['content', 'id'],
+      attributes: ['id', 'content', 'updatedAt'],
       include: [
         {
           model: Novel,
@@ -54,16 +79,30 @@ export class ReviewsService {
         },
         {
           model: User,
-          attributes: ['username', 'avatar'],
+          attributes: ['id', 'username', 'avatar'],
         },
       ],
     });
-
     if (amount < reviews.length) {
       reviews = reviews.slice(0, amount - 1);
     }
 
     return reviews;
+  }
+
+  async checkIfAlreadyPosted(
+    user_id: number,
+    novel_id: number,
+  ): Promise<Review> {
+    let review = await this.reviewRepository.findOne({
+      where: { novel_id, user_id },
+      attributes: ['id', 'content', 'updatedAt'],
+      include: [
+        { model: Novel, attributes: ['id', 'image', 'title'] },
+        { model: User, attributes: ['username', 'avatar'] },
+      ],
+    });
+    return review;
   }
 
   async getLatestReviewOverall(): Promise<Review[]> {
@@ -82,10 +121,13 @@ export class ReviewsService {
       where: { username: username },
     });
     let reviews = await this.reviewRepository.findAll({
-      include: [{ model: Novel, attributes: ['id', 'image', 'title'] }, {model: User, attributes: ['username', 'avatar']}],
+      include: [
+        { model: Novel, attributes: ['id', 'image', 'title'] },
+        { model: User, attributes: ['username', 'avatar'] },
+      ],
       order: [['createdAt', 'DESC']],
       where: { user_id: user.id },
-      attributes: { exclude: ['createdAt', 'updatedAt', 'novel_id'] },
+      attributes: ['id', 'content', 'updatedAt'],
     });
     return reviews;
   }

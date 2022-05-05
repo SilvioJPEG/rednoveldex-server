@@ -1,16 +1,26 @@
-import { Controller, Get, HttpCode, HttpStatus, Param } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  Post,
+  UploadedFile,
+  UseInterceptors,
+} from '@nestjs/common';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { AppService } from './app.service';
+import { diskStorage } from 'multer';
 import { JournalService } from './journal/journal.service';
 import { ListsService } from './lists/lists.service';
 import { FavouritesService } from './novels/favourites.service';
 import { Novel } from './novels/novels.model';
 import { NovelsService } from './novels/novels.service';
-import { ReviewBasic } from './reviews/create-review.dto';
+import { Express } from 'express';
 import { Review } from './reviews/reviews.model';
 import { ReviewsService } from './reviews/reviews.service';
 import { User } from './users/users.model';
 import { UsersService } from './users/users.service';
+import { FileInterceptor } from '@nestjs/platform-express';
 //контроллер должен оставаться тонким, всю логику стоит выносить в service
 @Controller('/api')
 export class AppController {
@@ -37,12 +47,14 @@ export class AppController {
   @Get('profile/:username')
   @HttpCode(HttpStatus.OK)
   async getProfileData(@Param('username') username: string): Promise<{
+    User: User;
     journalLength: number;
     listsAmount: number;
     favourites: Novel[];
     reviews: Review[];
   }> {
     const userData = await this.usersService.getUserByName(username);
+    console.log(userData);
     const { journalLength } = await this.journalService.getJournalLength(
       userData.id,
     );
@@ -55,6 +67,17 @@ export class AppController {
     const favourites = await this.favouritesService.getFavouritesByUser(
       userData.id,
     );
-    return { journalLength, listsAmount, reviews, favourites };
+    const User = await this.usersService.getUserProfile(username);
+    return { User, journalLength, listsAmount, reviews, favourites };
   }
+
+  @Post('/user/settings')
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: diskStorage({
+        destination: './uploadedFiles/avatars',
+      }),
+    }),
+  )
+  async setProfileData(@UploadedFile() file: Express.Multer.File) {}
 }

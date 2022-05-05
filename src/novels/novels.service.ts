@@ -12,7 +12,7 @@ export class NovelsService {
     const novel = await this.novelRepository.findByPk(id, {
       attributes: { exclude: ['createdAt', 'updatedAt', 'id'] },
     });
-    return novel;
+    return novel; 
   }
 
   async create(title: string) {

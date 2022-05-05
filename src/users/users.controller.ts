@@ -9,13 +9,17 @@ import {
   Patch,
   Post,
   Req,
+  UploadedFile,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { CreateUserDto } from './dto/create-user.dto';
 import { User } from './users.model';
 import { UsersService } from './users.service';
+import { Express } from 'express';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @ApiTags('USERS')
 @Controller('/users')
@@ -43,7 +47,7 @@ export class UsersController {
   @HttpCode(HttpStatus.OK)
   @UseGuards(JwtAuthGuard)
   LoggedInRetriving(@Param('username') username: string) {
-    return this.usersService.getUserProfile(username);
+    return this.usersService.getUserByName(username);
   }
 
   @ApiOperation({ summary: 'change user data' })
@@ -63,4 +67,5 @@ export class UsersController {
   deleteUserData(@Req() req) {
     return this.usersService.deleteUser(req.user.sub);
   }
+
 }

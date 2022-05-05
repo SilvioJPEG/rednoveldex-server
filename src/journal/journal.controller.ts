@@ -13,7 +13,7 @@ import {
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { UsersService } from 'src/users/users.service';
 import { JournalService } from './journal.service';
-import { updateJournalDto } from './update-journal.dto';
+import { updateEntityDto } from './update-journal.dto';
 @Controller('journal')
 export class JournalController {
   constructor(
@@ -24,17 +24,16 @@ export class JournalController {
   @Get(':username')
   @HttpCode(HttpStatus.OK)
   async getByUsername(@Param('username') username: string) {
-    const user = await this.usersService.getUserProfile(username);
-    console.log(user);
+    const user = await this.usersService.getUserByName(username);
     return this.journalService.getJournalByOwnerId(user.id);
   }
 
-  @Patch('/update')
+  @Patch('/update/:novel_id')
   @HttpCode(HttpStatus.ACCEPTED)
   @UseGuards(JwtAuthGuard)
-  async update(@Req() req, @Body() updateJournalDto: updateJournalDto) {
+  async update(@Req() req, @Param('novel_id') novel_id: number) {
     const user_id = req.user.sub;
-    return this.journalService.update(user_id, updateJournalDto.novel_id);
+    return this.journalService.update(user_id, novel_id);
   }
 
   @Post('/check')
@@ -50,5 +49,21 @@ export class JournalController {
   async countJournalEntities(@Body() body: { username: string }) {
     const user = await this.usersService.getUserProfile(body.username);
     return this.journalService.getJournalLength(user.id);
+  }
+
+  // JournalEntity roots
+  @Patch('/update/novel/:novel_id')
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(JwtAuthGuard)
+  async updateEntity(
+    @Req() req,
+    @Param('novel_id') novel_id: number,
+    @Body() updateJournalDto: updateEntityDto,
+  ) {
+    return this.journalService.updateEntry(
+      req.user.sub,
+      novel_id,
+      updateJournalDto,
+    );
   }
 }

@@ -44,6 +44,9 @@ export class User extends Model<User, UserCreationAttrs> {
   @Column({ type: DataType.STRING })
   location: string;
 
+  @Column({ type: DataType.STRING })
+  header_photo: string;
+
   //each user may have some favourites
   @BelongsToMany(() => Novel, () => userFavourites)
   favourites: Novel[];

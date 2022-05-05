@@ -24,10 +24,10 @@ export class JournalEntity extends Model<JournalEntity, JournalEntitysAttrs> {
   })
   id: number;
 
-  @Column({ type: DataType.INTEGER })
+  @Column({ type: DataType.DATE })
   started_reading: number;
 
-  @Column({ type: DataType.INTEGER })
+  @Column({ type: DataType.DATE })
   finished_reading: number;
 
   @Column({ type: DataType.STRING, allowNull: false, defaultValue: 'reading' })
@@ -35,6 +35,9 @@ export class JournalEntity extends Model<JournalEntity, JournalEntitysAttrs> {
 
   @Column({ type: DataType.INTEGER, allowNull: false, defaultValue: 0 })
   score: number;
+
+  @Column({ type: DataType.TEXT})
+  comments: string;
 
   @ForeignKey(() => Novel)
   @Column({ type: DataType.INTEGER, allowNull: false })

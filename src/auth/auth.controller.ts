@@ -14,14 +14,14 @@ import { ApiTags } from '@nestjs/swagger';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { AuthService } from './auth.service';
 import { JwtAuthGuard } from './jwt-auth.guard';
-import { Response } from 'express';
+import { Request, Response } from 'express';
 const Public = () => SetMetadata('isPublic', true);
 @ApiTags('Авторизация')
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
 
-  @Post('/registration')
+  @Post('registration')
   @HttpCode(HttpStatus.CREATED)
   async registration(
     @Body() userDto: CreateUserDto,
@@ -41,7 +41,7 @@ export class AuthController {
     return { user: result.profile };
   }
 
-  @Post('/login')
+  @Post('login')
   @HttpCode(HttpStatus.OK)
   async login(
     @Body() userDto: CreateUserDto,
@@ -61,17 +61,19 @@ export class AuthController {
     return { user: result.profile };
   }
 
-  @Post('/logout')
+  @Post('logout')
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.OK)
   logout(@Req() request) {
     const user = request.user;
-    console.log(user);
     return this.authService.logout(user.sub);
   }
 
   @Public()
   @UseGuards(AuthGuard('jwt-refresh'))
-  @Post('/refresh')
-  refreshTokens() {}
+  @HttpCode(HttpStatus.OK)
+  @Post('refresh')
+  refreshTokens() {
+    this.authService.refreshTokens
+  }
 }

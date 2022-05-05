@@ -4,6 +4,7 @@ import { Novel } from 'src/novels/novels.model';
 import { JournalEntity } from './journal-entity.model';
 
 import { Journal } from './journal.model';
+import { updateEntityDto } from './update-journal.dto';
 @Injectable()
 export class JournalService {
   constructor(
@@ -17,14 +18,12 @@ export class JournalService {
     const entities = await this.entityRepository.findAll({
       include: [
         { model: Novel, attributes: ['id', 'image', 'title'] },
-        { model: Journal, where: { id: owner_id }, attributes: [] },
+        { model: Journal, where: { owner_id: owner_id }, attributes: [] },
       ],
       attributes: ['score', 'status', 'started_reading', 'finished_reading'],
     });
-    console.log
     return entities;
   }
-
   async update(user_id: number, novel_id: number) {
     const journal = await this.journalRepository.findOne({
       where: { owner_id: user_id },
@@ -42,6 +41,30 @@ export class JournalService {
         journal_id: journal.id,
       });
     }
+    return InJournal;
+  }
+  async updateEntry(
+    user_id: number,
+    novel_id: number,
+    updateJournalDto: updateEntityDto,
+  ): Promise<JournalEntity> {
+    let entity = await this.entityRepository.findOne({
+      where: { journal_id: user_id, novel_id },
+    });
+    if (!entity) {
+      throw new Error('No entity found for update');
+    }
+    entity = await entity.update(updateJournalDto);
+    return await this.entityRepository.findByPk(entity.id, {
+      attributes: ['status', 'score', 'finished_reading', 'started_reading'],
+      include: [
+        {
+          model: Novel,
+          where: { id: novel_id },
+          attributes: ['id', 'title', 'image'],
+        },
+      ],
+    });
   }
 
   async checkIfInJournal(user_id: number, novel_id: number) {
@@ -60,10 +83,11 @@ export class JournalService {
   }
 
   async getJournalLength(user_id: number): Promise<{ journalLength: number }> {
-    const journal = await this.journalRepository.findAll({
-      where: { owner_id: user_id },
+    const journals = await this.entityRepository.findAndCountAll({
+      where: { journal_id: user_id },
     });
-    if (!journal) throw new NotFoundException('journal not found');
-    return { journalLength: journal.length };
+    console.log(journals.count);
+    if (!journals) throw new NotFoundException('journal length not found');
+    return { journalLength: journals.count };
   }
 }

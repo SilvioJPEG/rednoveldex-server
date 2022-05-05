@@ -20,3 +20,18 @@ export type ReviewBasic = {
   };
   content: string;
 };
+
+export class updateReviewDto {
+  @ApiProperty({
+    example: 'This novel is fantastic...',
+    description: 'text of a review',
+  })
+  @IsString({ message: 'Must be a string' })
+  readonly content: string;
+
+  @IsNumber()
+  readonly novel_id: number;
+
+  @IsNumber()
+  readonly user_id: number;
+}
