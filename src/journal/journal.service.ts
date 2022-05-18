@@ -24,7 +24,8 @@ export class JournalService {
     });
     return entities;
   }
-  async update(user_id: number, novel_id: number) {
+
+  async addEntity(user_id: number, novel_id: number): Promise<JournalEntity> {
     const journal = await this.journalRepository.findOne({
       where: { owner_id: user_id },
     });
@@ -33,16 +34,40 @@ export class JournalService {
       user_id,
       novel_id,
     );
-    if (InJournal) {
-      this.entityRepository.destroy({ where: { id: novelEntry.id } });
-    } else {
-      this.entityRepository.create({
+    if (!InJournal) {
+      const entity = await this.entityRepository.create({
         novel_id: novel_id,
         journal_id: journal.id,
       });
+      const res = await this.entityRepository.findByPk(entity.id, {
+        include: [
+          {
+            model: Novel,
+            where: { id: novel_id },
+            attributes: ['id', 'title', 'image'],
+          },
+        ],
+      });
+      return res;
+    } else {
+      return novelEntry;
     }
-    return InJournal;
   }
+  async deleteEntity(user_id: number, novel_id: number) {
+    const journal = await this.journalRepository.findOne({
+      where: { owner_id: user_id },
+    });
+    if (!journal) throw new NotFoundException('journal not found');
+    const { InJournal, novelEntry } = await this.checkIfInJournal(
+      user_id,
+      novel_id,
+    );
+
+    if (InJournal) {
+      this.entityRepository.destroy({ where: { id: novelEntry.id } });
+    }
+  }
+
   async updateEntry(
     user_id: number,
     novel_id: number,
@@ -74,6 +99,7 @@ export class JournalService {
     if (!journal) throw new NotFoundException('journal not found');
     const novelEntry = await this.entityRepository.findOne({
       where: { novel_id: novel_id, journal_id: journal.id },
+      include: [{ model: Novel, attributes: ['id', 'image', 'title'] }],
     });
     if (novelEntry) {
       return { InJournal: true, novelEntry };

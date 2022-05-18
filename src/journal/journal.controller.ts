@@ -9,6 +9,7 @@ import {
   Body,
   UseGuards,
   Post,
+  Delete,
 } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { UsersService } from 'src/users/users.service';
@@ -28,14 +29,6 @@ export class JournalController {
     return this.journalService.getJournalByOwnerId(user.id);
   }
 
-  @Patch('/update/:novel_id')
-  @HttpCode(HttpStatus.ACCEPTED)
-  @UseGuards(JwtAuthGuard)
-  async update(@Req() req, @Param('novel_id') novel_id: number) {
-    const user_id = req.user.sub;
-    return this.journalService.update(user_id, novel_id);
-  }
-
   @Post('/check')
   @HttpCode(HttpStatus.OK)
   @UseGuards(JwtAuthGuard)
@@ -52,8 +45,25 @@ export class JournalController {
   }
 
   // JournalEntity roots
-  @Patch('/update/novel/:novel_id')
+
+  @Post('/entity/:novel_id')
   @HttpCode(HttpStatus.OK)
+  @UseGuards(JwtAuthGuard)
+  async update(@Req() req, @Param('novel_id') novel_id: number) {
+    const user_id = req.user.sub;
+    return this.journalService.addEntity(user_id, novel_id);
+  }
+
+  @Delete('/entity/:novel_id')
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(JwtAuthGuard)
+  async delete(@Req() req, @Param('novel_id') novel_id: number) {
+    const user_id = req.user.sub;
+    return this.journalService.deleteEntity(user_id, novel_id);
+  }
+
+  @Patch('/entity/:novel_id')
+  @HttpCode(HttpStatus.ACCEPTED)
   @UseGuards(JwtAuthGuard)
   async updateEntity(
     @Req() req,

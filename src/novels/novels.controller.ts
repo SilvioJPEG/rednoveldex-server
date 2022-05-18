@@ -38,7 +38,7 @@ export class NovelsController {
 
   @ApiOperation({ summary: 'find novel in VNDB by title return titles info' })
   @ApiResponse({ status: 200 })
-  @Post('/find/:title')
+  @Post('/:title')
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.OK)
   async findInVNDB(@Param('title') title: string) {
@@ -48,7 +48,7 @@ export class NovelsController {
 
   @ApiOperation({ summary: 'get novel by id' })
   @ApiResponse({ status: 200, type: Novel })
-  @Get(':id')
+  @Get('/:id')
   @HttpCode(HttpStatus.OK)
   findById(@Param('id') id: number) {
     return this.novelsService.getOne(id);
@@ -56,7 +56,7 @@ export class NovelsController {
 
   @ApiOperation({ summary: 'add to/delete from favourites with id=:id' })
   @ApiResponse({ status: 200, type: Novel })
-  @Patch('/favourites/:id/update-favourites')
+  @Patch('/favourites/:id/')
   @HttpCode(HttpStatus.OK)
   @UseGuards(JwtAuthGuard)
   updateFavourites(@Param('id') novelId: number, @Req() req) {
@@ -67,7 +67,7 @@ export class NovelsController {
     summary: 'check if novel with specific id is in users favourites',
   })
   @ApiResponse({ status: 200 })
-  @Get('/favourites/:id/check-favourites')
+  @Get('/favourites/:id/')
   @HttpCode(HttpStatus.OK)
   @UseGuards(JwtAuthGuard)
   checkIfFavourited(@Param('id') novelId: number, @Req() req) {

@@ -11,17 +11,17 @@ export class FavouritesService {
     @InjectModel(userFavourites) private UFRep: typeof userFavourites,
   ) {}
 
-  async updateFavourites(novel_id: number, user_id: number) {
+  async updateFavourites(novel_id: number, user_id: number): Promise<boolean> {
     const inFavourites = (await this.checkIfFavourited(novel_id, user_id))
       .InFavourites;
     if (inFavourites) {
-      const unfavourited = await this.UFRep.destroy({
+      await this.UFRep.destroy({
         where: { user_id, novel_id },
       });
-      return unfavourited;
+      return false;
     } else {
-      const favourited = await this.UFRep.create({ user_id, novel_id });
-      return favourited;
+      await this.UFRep.create({ user_id, novel_id });
+      return true;
     }
   }
   async checkIfFavourited(
