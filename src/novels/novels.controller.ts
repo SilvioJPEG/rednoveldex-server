@@ -12,6 +12,7 @@ import {
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { JournalService } from 'src/journal/journal.service';
 import { UsersService } from 'src/users/users.service';
 import { AddNovelDto, novelVNDB } from './add-novel.dto';
 import { FavouritesService } from './favourites.service';
@@ -25,6 +26,7 @@ export class NovelsController {
     private novelsService: NovelsService,
     private favouritesService: FavouritesService,
     private usersService: UsersService,
+    private journalService: JournalService,
   ) {}
 
   @ApiOperation({ summary: 'add a new novel' })
@@ -50,8 +52,13 @@ export class NovelsController {
   @ApiResponse({ status: 200, type: Novel })
   @Get('/:id')
   @HttpCode(HttpStatus.OK)
-  findById(@Param('id') id: number) {
-    return this.novelsService.getOne(id);
+  async findById(
+    @Param('id') id: number,
+  ): Promise<{ novel: Novel; averageScore: number }> {
+    const novel = await this.novelsService.getOne(id);
+    const averageScore = (await this.journalService.getAverageScore(id))
+      .score;
+    return { novel, averageScore };
   }
 
   @ApiOperation({ summary: 'add to/delete from favourites with id=:id' })

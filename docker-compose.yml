@@ -1,18 +1,35 @@
 version: '3.7'
 
 services:
-  main:
-    container_name: main
+  dev:
+    container_name: noveldex_nestjs_api_dev
     build:
       context: .
       target: development
+      dockerfile: ./Dockerfile
     volumes:
       - .:/usr/src/app
       - /usr/src/app/node_modules
     ports:
       - ${SERVER_PORT}:${SERVER_PORT}
       - 9229:9229
-    command: npm run start:dev
+    env_file:
+      - .env
+    depends_on:
+      - postgres
+
+  prod:
+    container_name: noveldex_nestjs_api_prod
+    build:
+      context: .
+      target: production
+      dockerfile: ./Dockerfile
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    ports:
+      - ${SERVER_PORT}:${SERVER_PORT}
+      - 9229:9229
     env_file:
       - .env
     depends_on:

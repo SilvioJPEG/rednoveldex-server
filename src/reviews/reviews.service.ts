@@ -49,6 +49,7 @@ export class ReviewsService {
     }
     return review;
   }
+  
   async updateReview(user_id: number, dto: updateReviewDto): Promise<Review> {
     let review = await this.reviewRepository.findOne({
       where: { novel_id: dto.novel_id, user_id: user_id },

@@ -47,7 +47,7 @@ export class Novel extends Model<Novel, NovelCreationAttrs> {
   @Column({ type: DataType.STRING })
   image: string;
 
-  @Column({ type: DataType.BOOLEAN })
+  @Column({ type: DataType.BOOLEAN, defaultValue: false })
   explicit: boolean;
 
   //user can add it to favourites

@@ -109,11 +109,24 @@ export class JournalService {
   }
 
   async getJournalLength(user_id: number): Promise<{ journalLength: number }> {
-    const journals = await this.entityRepository.findAndCountAll({
+    const entities = await this.entityRepository.findAndCountAll({
       where: { journal_id: user_id },
     });
-    console.log(journals.count);
-    if (!journals) throw new NotFoundException('journal length not found');
-    return { journalLength: journals.count };
+    if (!entities) throw new NotFoundException('journal length not found');
+    return { journalLength: entities.count };
+  }
+
+  async getAverageScore(novel_id: number): Promise<{ score: number }> {
+    const entities = await this.entityRepository.findAndCountAll({
+      where: { novel_id },
+    });
+    if (entities.count === 0) {
+      return { score: 0 };
+    }
+    const averageScore =
+      entities.rows.reduce((accumulator, curr) => {
+        return accumulator + curr.score;
+      }, 0) / entities.count;
+    return { score: averageScore };
   }
 }

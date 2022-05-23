@@ -8,12 +8,14 @@ const VNDB = require('vndb-api');
 export class NovelsService {
   constructor(@InjectModel(Novel) private novelRepository: typeof Novel) {}
 
-  async getOne(id: number) {
+  async getOne(id: number): Promise<Novel> {
     const novel = await this.novelRepository.findByPk(id, {
       attributes: { exclude: ['createdAt', 'updatedAt', 'id'] },
     });
-    return novel; 
+    return novel;
   }
+
+
 
   async create(title: string) {
     const vndb = new VNDB('rednovel', { minConnection: 1, maxConnection: 10 });
@@ -43,7 +45,7 @@ export class NovelsService {
   async getRecentlyAdded(amount: number) {
     const novels = await this.novelRepository.findAll({
       order: [['createdAt', 'DESC']],
-      attributes: ['title', 'id', 'image'],
+      attributes: ['title', 'id', 'image', 'explicit'],
     });
     if (amount >= novels.length) {
       return novels;
@@ -72,6 +74,7 @@ export class NovelsService {
       return false;
     }
   }
+
   async findInVNDB(title: string): Promise<string[]> {
     // Create a client
     const vndb = new VNDB('rednovel', { minConnection: 1, maxConnection: 10 });

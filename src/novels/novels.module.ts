@@ -4,6 +4,7 @@ import { SequelizeModule } from '@nestjs/sequelize';
 import { AuthModule } from 'src/auth/auth.module';
 import { JournalEntity } from 'src/journal/journal-entity.model';
 import { Journal } from 'src/journal/journal.model';
+import { JournalService } from 'src/journal/journal.service';
 import { List } from 'src/lists/lists.model';
 import { User } from 'src/users/users.model';
 import { UsersModule } from 'src/users/users.module';
@@ -15,7 +16,7 @@ import { userFavourites } from './user-favourites.model';
 
 @Module({
   controllers: [NovelsController],
-  providers: [NovelsService, FavouritesService],
+  providers: [NovelsService, FavouritesService, JournalService],
   imports: [
     SequelizeModule.forFeature([
       Novel,

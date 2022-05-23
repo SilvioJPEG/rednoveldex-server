@@ -3,7 +3,7 @@ import * as argon from 'argon2';
 import { JwtService } from '@nestjs/jwt';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { UsersService } from 'src/users/users.service';
-import { Tokens } from './types/Tokens';
+import { Tokens } from './types/tokens';
 import { User } from 'src/users/users.model';
 
 @Injectable()

@@ -19,9 +19,7 @@ import { ReviewsService } from './reviews.service';
 
 @Controller('reviews')
 export class ReviewsController {
-  constructor(
-    private reviewsService: ReviewsService,
-  ) {}
+  constructor(private reviewsService: ReviewsService) {}
 
   @ApiOperation({ summary: 'get latest reviews overall' })
   @ApiResponse({ status: 200, type: [Review] })
@@ -52,7 +50,7 @@ export class ReviewsController {
 
   @ApiOperation({ summary: "Update review's text, return created review data" })
   @ApiResponse({ status: 200, type: Review })
-  @Patch()
+  @Patch('/:review_id')
   @HttpCode(HttpStatus.OK)
   @UseGuards(JwtAuthGuard)
   update(@Req() req, @Body() dto: updateReviewDto) {
@@ -61,7 +59,7 @@ export class ReviewsController {
 
   @ApiOperation({ summary: 'Deletes review by id' })
   @ApiResponse({ status: 200 })
-  @Delete('/review_id')
+  @Delete('/:review_id')
   @HttpCode(HttpStatus.OK)
   @UseGuards(JwtAuthGuard)
   delete(@Req() req, @Param('review_id') novel_id: number) {
