@@ -8,7 +8,7 @@ import { AuthModule } from './auth/auth.module';
 import { Novel } from './novels/novels.model';
 import { NovelsModule } from './novels/novels.module';
 import { List } from './lists/lists.model';
-import { ListOfNovels } from './lists/list-of-novels.model';
+import { NovelInListEntity } from './lists/novel-in-a-list.model';
 import { ReviewsModule } from './reviews/reviews.module';
 import { Review } from './reviews/reviews.model';
 import { userFavourites } from './novels/user-favourites.model';
@@ -38,7 +38,7 @@ import { AppController } from './app.controller';
         Novel,
         userFavourites,
         List,
-        ListOfNovels,
+        NovelInListEntity,
         Review,
         Journal,
         JournalEntity,

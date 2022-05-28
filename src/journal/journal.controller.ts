@@ -25,7 +25,7 @@ export class JournalController {
   @Get(':username')
   @HttpCode(HttpStatus.OK)
   async getByUsername(@Param('username') username: string) {
-    const user = await this.usersService.getUserByName(username);
+    const user = await this.usersService.getUserFull(username);
     return this.journalService.getJournalByOwnerId(user.id);
   }
 

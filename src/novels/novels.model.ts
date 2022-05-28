@@ -9,7 +9,7 @@ import {
 import { JournalEntity } from 'src/journal/journal-entity.model';
 
 import { Journal } from 'src/journal/journal.model';
-import { ListOfNovels } from 'src/lists/list-of-novels.model';
+import { NovelInListEntity } from 'src/lists/novel-in-a-list.model';
 import { List } from 'src/lists/lists.model';
 import { userFavourites } from 'src/novels/user-favourites.model';
 import { Review } from 'src/reviews/reviews.model';
@@ -55,7 +55,7 @@ export class Novel extends Model<Novel, NovelCreationAttrs> {
   user: User[];
 
   //novel can be added to multiple different lists
-  @BelongsToMany(() => List, () => ListOfNovels)
+  @BelongsToMany(() => List, () => NovelInListEntity)
   lists: List[];
 
   @BelongsToMany(() => Journal, () => JournalEntity)

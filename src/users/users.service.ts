@@ -22,14 +22,21 @@ export class UsersService {
     });
     return user;
   }
-
+  async getUser(username: string): Promise<User> {
+    const user = await this.userRepository.findOne({
+      where: { username },
+      attributes: ['username', 'avatar', 'createdAt', 'bio', 'location'],
+    });
+    if (!user) throw new NotFoundException('user not found');
+    return user;
+  }
   async getUserById(id: number): Promise<User> {
     const user = await this.userRepository.findByPk(id);
     if (!user) throw new NotFoundException('user not found');
     return user;
   }
-  async getUserByName(username: string): Promise<User> {
-    const user = await this.userRepository.findOne({where: { username } });
+  async getUserFull(username: string): Promise<User> {
+    const user = await this.userRepository.findOne({ where: { username } });
     if (!user) throw new NotFoundException('user not found');
     return user;
   }

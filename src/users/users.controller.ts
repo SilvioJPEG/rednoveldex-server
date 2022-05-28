@@ -47,7 +47,7 @@ export class UsersController {
   @HttpCode(HttpStatus.OK)
   @UseGuards(JwtAuthGuard)
   LoggedInRetriving(@Param('username') username: string) {
-    return this.usersService.getUserByName(username);
+    return this.usersService.getUser(username);
   }
 
   @ApiOperation({ summary: 'change user data' })

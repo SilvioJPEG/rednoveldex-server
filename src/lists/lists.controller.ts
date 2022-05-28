@@ -51,8 +51,8 @@ export class ListsController {
   @HttpCode(HttpStatus.OK)
   @UseGuards(JwtAuthGuard)
   async getAllByUser(@Param('username') username: string) {
-    const user = await this.usersService.getUserProfile(username);
-    return this.listsService.getListsByUser(user.id);
+    const user = await this.usersService.getUserFull(username);
+    return this.listsService.getListsPreviewByUser(user.id);
   }
 
   @Delete()

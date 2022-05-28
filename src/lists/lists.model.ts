@@ -9,7 +9,7 @@ import {
 } from 'sequelize-typescript';
 import { Novel } from 'src/novels/novels.model';
 import { User } from 'src/users/users.model';
-import { ListOfNovels } from './list-of-novels.model';
+import { NovelInListEntity } from './novel-in-a-list.model';
 
 //поля необходимые для создания объекта
 interface ListCreationAttrs {
@@ -33,7 +33,7 @@ export class List extends Model<List, ListCreationAttrs> {
   @Column({ type: DataType.TEXT })
   description: string;
 
-  @BelongsToMany(() => Novel, () => ListOfNovels)
+  @BelongsToMany(() => Novel, () => NovelInListEntity)
   novels: Novel[];
 
   @ForeignKey(() => User)

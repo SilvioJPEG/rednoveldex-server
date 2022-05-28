@@ -15,8 +15,10 @@ import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { AuthService } from './auth.service';
 import { JwtAuthGuard } from './jwt-auth.guard';
 import { Request, Response } from 'express';
+
 const Public = () => SetMetadata('isPublic', true);
-@ApiTags('Авторизация')
+
+@ApiTags('AUTH')
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) {}

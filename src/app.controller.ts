@@ -53,8 +53,7 @@ export class AppController {
     favourites: Novel[];
     reviews: Review[];
   }> {
-    const userData = await this.usersService.getUserByName(username);
-    console.log(userData);
+    const userData = await this.usersService.getUserFull(username);
     const { journalLength } = await this.journalService.getJournalLength(
       userData.id,
     );

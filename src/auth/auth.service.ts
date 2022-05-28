@@ -40,7 +40,7 @@ export class AuthService {
   }
 
   async validateUser(userDto: CreateUserDto): Promise<User> {
-    const user = await this.usersService.getUserByName(userDto.username);
+    const user = await this.usersService.getUserFull(userDto.username);
     if (!user) throw new ForbiddenException('Access Denied');
     const passwordMatches = await argon.verify(user.password, userDto.password);
     if (!passwordMatches) throw new ForbiddenException('Access Denied');

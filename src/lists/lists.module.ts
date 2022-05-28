@@ -5,7 +5,7 @@ import { Journal } from 'src/journal/journal.model';
 import { Novel } from 'src/novels/novels.model';
 import { User } from 'src/users/users.model';
 import { UsersService } from 'src/users/users.service';
-import { ListOfNovels } from './list-of-novels.model';
+import { NovelInListEntity } from './novel-in-a-list.model';
 import { ListsController } from './lists.controller';
 import { List } from './lists.model';
 import { ListsService } from './lists.service';
@@ -14,6 +14,6 @@ import { ListsService } from './lists.service';
   controllers: [ListsController],
   providers: [ListsService, UsersService],
   exports: [ListsService],
-  imports: [SequelizeModule.forFeature([List, Novel, User, Journal, ListOfNovels]), AuthModule],
+  imports: [SequelizeModule.forFeature([List, Novel, User, Journal, NovelInListEntity]), AuthModule],
 })
 export class ListsModule {}

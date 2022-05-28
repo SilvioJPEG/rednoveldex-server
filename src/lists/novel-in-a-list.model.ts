@@ -13,8 +13,8 @@ interface ListOfNovelsAttrs {
   list_id: number;
 }
 
-@Table({ tableName: 'list_of_novels' })
-export class ListOfNovels extends Model<ListOfNovels, ListOfNovelsAttrs> {
+@Table({ tableName: 'novel_in_list' })
+export class NovelInListEntity extends Model<NovelInListEntity, ListOfNovelsAttrs> {
   @Column({
     type: DataType.INTEGER,
     unique: true,
@@ -30,5 +30,4 @@ export class ListOfNovels extends Model<ListOfNovels, ListOfNovelsAttrs> {
   @ForeignKey(() => List)
   @Column({ type: DataType.INTEGER, allowNull: false })
   list_id: number;
-
 }

@@ -1,8 +1,14 @@
-import { IsArray, Length, IsNumber, IsNotEmpty, IsString } from 'class-validator';
+import {
+  IsArray,
+  Length,
+  IsNumber,
+  IsNotEmpty,
+  IsString,
+} from 'class-validator';
 
 export class CreateListDto {
-
   @IsString()
+  @IsNotEmpty()
   readonly name: string;
 
   @IsString()
