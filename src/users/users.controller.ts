@@ -18,8 +18,6 @@ import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { CreateUserDto } from './dto/create-user.dto';
 import { User } from './users.model';
 import { UsersService } from './users.service';
-import { Express } from 'express';
-import { FileInterceptor } from '@nestjs/platform-express';
 
 @ApiTags('USERS')
 @Controller('/users')
@@ -52,7 +50,7 @@ export class UsersController {
 
   @ApiOperation({ summary: 'change user data' })
   @ApiResponse({ status: 200, type: User })
-  @Patch('')
+  @Patch()
   @HttpCode(HttpStatus.OK)
   @UseGuards(JwtAuthGuard)
   updateUserData(@Req() req, @Body() body) {
@@ -61,7 +59,7 @@ export class UsersController {
 
   @ApiOperation({ summary: 'delete user completely' })
   @ApiResponse({ status: 200 })
-  @Delete('')
+  @Delete()
   @HttpCode(HttpStatus.OK)
   @UseGuards(JwtAuthGuard)
   deleteUserData(@Req() req) {

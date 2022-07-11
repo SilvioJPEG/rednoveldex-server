@@ -8,6 +8,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   Req,
   UseGuards,
 } from '@nestjs/common';
@@ -39,18 +40,19 @@ export class ReviewsController {
 
   @ApiOperation({ summary: 'Get :amount of latest reviews for :novel_id' })
   @ApiResponse({ status: 200, type: [Review] })
-  @Get('/:novel_id/:amount')
+  @Get()
   @HttpCode(HttpStatus.OK)
   getLatestReviewsByNovel(
-    @Param('novel_id') novel_id: number,
-    @Param('amount') amount: number,
+    @Query('novel_id') novel_id: number,
+    @Query('amount') amount: number,
+    @Query('username') username: string,
   ) {
-    return this.reviewsService.getLatestReviewsByNovel(novel_id, amount);
+    return this.reviewsService.getReviews(novel_id, amount, username);
   }
 
   @ApiOperation({ summary: "Update review's text, return created review data" })
   @ApiResponse({ status: 200, type: Review })
-  @Patch('/:review_id')
+  @Patch(':id')
   @HttpCode(HttpStatus.OK)
   @UseGuards(JwtAuthGuard)
   update(@Req() req, @Body() dto: updateReviewDto) {
@@ -59,27 +61,19 @@ export class ReviewsController {
 
   @ApiOperation({ summary: 'Deletes review by id' })
   @ApiResponse({ status: 200 })
-  @Delete('/:review_id')
+  @Delete(':id')
   @HttpCode(HttpStatus.OK)
   @UseGuards(JwtAuthGuard)
-  delete(@Req() req, @Param('review_id') novel_id: number) {
-    this.reviewsService.deleteReview(req.user.sub, novel_id);
+  delete(@Req() req, @Param('review_id') id: number) {
+    this.reviewsService.deleteReview(id);
   }
 
   @ApiOperation({ summary: 'Checks if current user has review for :novel_id' })
   @ApiResponse({ status: 200 })
-  @Get('/:novel_id/')
+  @Get('check')
   @HttpCode(HttpStatus.OK)
   @UseGuards(JwtAuthGuard)
-  get(@Req() req, @Param('novel_id') novel_id: number) {
+  get(@Req() req, @Query('novel_id') novel_id: number) {
     return this.reviewsService.checkIfAlreadyPosted(req.user.sub, novel_id);
-  }
-
-  @ApiOperation({ summary: 'Get reviews of user' })
-  @ApiResponse({ status: 200 })
-  @Get('/:username')
-  @HttpCode(HttpStatus.OK)
-  getReviewsByUsername(@Param('username') username: string) {
-    return this.reviewsService.getReviewsByUser(username);
   }
 }

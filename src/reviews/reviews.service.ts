@@ -49,7 +49,7 @@ export class ReviewsService {
     }
     return review;
   }
-  
+
   async updateReview(user_id: number, dto: updateReviewDto): Promise<Review> {
     let review = await this.reviewRepository.findOne({
       where: { novel_id: dto.novel_id, user_id: user_id },
@@ -58,16 +58,15 @@ export class ReviewsService {
     return review;
   }
 
-  async deleteReview(user_id: number, novel_id: number) {
-    let review = await this.reviewRepository.findOne({
-      where: { novel_id, user_id },
-    });
-    if (review) review.destroy();
+  async deleteReview(id: number) {
+    let review = await this.reviewRepository.findByPk(id);
+    review.destroy();
   }
 
-  async getLatestReviewsByNovel(
-    novel_id: number,
-    amount: number,
+  async getReviews(
+    novel_id?: number,
+    amount?: number,
+    username?: string,
   ): Promise<Review[]> {
     let reviews = await this.reviewRepository.findAll({
       order: [['createdAt', 'DESC']],
@@ -80,6 +79,7 @@ export class ReviewsService {
         },
         {
           model: User,
+          where: { username: username },
           attributes: ['id', 'username', 'avatar'],
         },
       ],

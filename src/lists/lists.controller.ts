@@ -8,6 +8,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   Req,
   UseGuards,
 } from '@nestjs/common';
@@ -16,7 +17,6 @@ import { Request } from 'express';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { User } from 'src/users/users.model';
 import { UsersService } from 'src/users/users.service';
-import { CreateListDto } from './create-list.dto';
 import { List } from './lists.model';
 import { ListsService } from './lists.service';
 interface AuthRequest extends Request {
@@ -47,25 +47,28 @@ export class ListsController {
 
   @ApiOperation({ summary: 'get lists by user' })
   @ApiResponse({ status: 200 })
-  @Get('/:username/')
+  @Get()
   @HttpCode(HttpStatus.OK)
   @UseGuards(JwtAuthGuard)
-  async getAllByUser(@Param('username') username: string) {
+  async getAllByUser(@Query('username') username: string) {
     const user = await this.usersService.getUserFull(username);
     return this.listsService.getListsPreviewByUser(user.id);
   }
 
-  @Delete()
+  @Delete('/:id/')
   @HttpCode(HttpStatus.OK)
   @UseGuards(JwtAuthGuard)
-  async deleteList(@Body() body: { list_id: number }) {
-    return this.listsService.deleteList(body.list_id);
+  async deleteList(@Param('id') id: number) {
+    return this.listsService.deleteList(id);
   }
 
-  @Patch()
+  @Patch('/:id/')
   @HttpCode(HttpStatus.OK)
   @UseGuards(JwtAuthGuard)
-  async updateList(@Body() body: { updatedList: List }) {
-    return this.listsService.updateList(body.updatedList);
+  async updateList(
+    @Body() body: { updatedList: List },
+    @Param('id') id: number,
+  ) {
+    return this.listsService.updateList(id, body.updatedList);
   }
 }

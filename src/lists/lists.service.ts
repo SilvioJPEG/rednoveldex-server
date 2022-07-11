@@ -48,9 +48,9 @@ export class ListsService {
     return list;
   }
 
-  async updateList(updatedList: List): Promise<List> {
+  async updateList(id: number, updatedList: List): Promise<List> {
     const list = await this.ListRepository.update(updatedList, {
-      where: { id: updatedList.id },
+      where: { id },
     });
     if (list[0] === 1) {
       return list[1][1];
@@ -59,8 +59,8 @@ export class ListsService {
     }
   }
 
-  async deleteList(list_id: number) {
-    const list = await this.ListRepository.findByPk(list_id);
+  async deleteList(id: number) {
+    const list = await this.ListRepository.findByPk(id);
     if (list) {
       list.destroy();
     }
